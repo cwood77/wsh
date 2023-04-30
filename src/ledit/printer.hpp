@@ -12,7 +12,8 @@ class printer {
 public:
    printer(pen::object& p, cui::iStyler& s) : m_pen(p), m_style(s) {}
 
-   void print(ledit::cmdLineState& s);
+   void initialize(cmdLineState& s);
+   void print(cmdLineState& s);
 
 private:
    pen::object& m_pen;

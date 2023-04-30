@@ -56,6 +56,8 @@ public:
 
    iStyler& prompt(std::function<void(std::ostream&)> f)
    { return with(iStylePrefs::kPrompt,f); }
+   iStyler& normal(std::function<void(std::ostream&)> f)
+   { return with(iStylePrefs::kNormal,f); }
    iStyler& hint(std::function<void(std::ostream&)> f)
    { return with(iStylePrefs::kHint,f); }
    iStyler& help(std::function<void(std::ostream&)> f)

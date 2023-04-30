@@ -2,6 +2,7 @@
 #define ___cui_pen___
 
 #include "api.hpp"
+#include <cstdio>
 #include <iostream>
 
 namespace pen {
@@ -62,6 +63,23 @@ private:
    cui::pnt m_p;
 };
 
+// TODO - this prints to stdout for some reason, so I'm not using it?
+class getPos {
+public:
+   explicit getPos(cui::pnt& p) : m_p(p) {}
+
+   void insert(std::ostream& s) const
+   {
+      s << "\x1b[6n";
+      std::string resp;
+      std::cin >> resp;
+      ::sscanf(resp.c_str(),"\x1b[%llu;%lluR",&m_p.y,&m_p.x);
+   }
+
+private:
+   cui::pnt& m_p;
+};
+
 class clearScreen {};
 
 class showCursor {
@@ -87,6 +105,9 @@ inline std::ostream& operator<<(std::ostream& s, const pen::colorBase& v)
 { v.insert(s); return s; }
 
 inline std::ostream& operator<<(std::ostream& s, const pen::moveTo& v)
+{ v.insert(s); return s; }
+
+inline std::ostream& operator<<(std::ostream& s, const pen::getPos& v)
 { v.insert(s); return s; }
 
 inline std::ostream& operator<<(std::ostream& s, const pen::clearScreen&)

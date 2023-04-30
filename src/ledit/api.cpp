@@ -24,6 +24,7 @@ void cmdLineEditor::run()
    do
    {
       cmdLineState state;
+      printer(out,styler).initialize(state);
       while(!state.readyToSend)
       {
          printer(out,styler).print(state);
@@ -33,6 +34,8 @@ void cmdLineEditor::run()
          bool handled = false;
          for(size_t i=0;!handled&&i<handlers.size();i++)
             handled = handlers[i]->tryHandle(c,state);
+         for(size_t i=0;!handled&&i<handlers.size();i++)
+            handled = handlers[i]->tryHandleLast(c,state);
 
          if(!handled)
          {

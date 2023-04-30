@@ -24,11 +24,13 @@ public:
    virtual std::string advanceAll() = 0;
 };
 
+// [--prompt--][--usertext--][--hint--]
+// <help>
 class cmdLineState {
 public:
    cmdLineState()
    : loc(0,0), pCompletionState(NULL), iCursor(0), iHintStart(0), pGuessState(NULL)
-   , readyToSend(false) {}
+   , readyToSend(false), lastNonPromptLength(0) {}
 
    cui::pnt loc;
    std::string prompt;
@@ -39,6 +41,7 @@ public:
    iGuessState *pGuessState;
    std::string helpText;
    bool readyToSend;
+   size_t lastNonPromptLength;
 };
 
 class iCmdLineEditor {
@@ -49,7 +52,9 @@ public:
 
 class iCmdLineKeyHandler {
 public:
+   virtual ~iCmdLineKeyHandler() {}
    virtual bool tryHandle(char c, cmdLineState& s) = 0;
+   virtual bool tryHandleLast(char c, cmdLineState& s) = 0;
 };
 
 } // namespace ledit
