@@ -1,0 +1,21 @@
+=== green
+envvars(path)
+jobs
+combined stdout+stderr
+path completion
+Ctrl-C kill
+subproc(shmem)
+
+=== yellow
+color
+command completion
+timestamped output
+
+=== orange
+redirection/pipes
+script languages
+diag partner shell
+animations
+
+=== red
+window control
