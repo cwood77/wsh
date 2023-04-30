@@ -14,18 +14,18 @@ all: \
 	$(OUT_DIR)/debug/file.dll \
 	$(OUT_DIR)/debug/file.test.dll \
 	$(OUT_DIR)/debug/ledit.dll \
-	$(OUT_DIR)/debug/shell.exe \
 	$(OUT_DIR)/debug/tcatbin.dll \
 	$(OUT_DIR)/debug/test.exe \
+	$(OUT_DIR)/debug/wsh.exe \
 	$(OUT_DIR)/release/console.dll \
 	$(OUT_DIR)/release/cui.dll \
 	$(OUT_DIR)/release/exec.dll \
 	$(OUT_DIR)/release/file.dll \
 	$(OUT_DIR)/release/file.test.dll \
 	$(OUT_DIR)/release/ledit.dll \
-	$(OUT_DIR)/release/shell.exe \
 	$(OUT_DIR)/release/tcatbin.dll \
-	$(OUT_DIR)/release/test.exe
+	$(OUT_DIR)/release/test.exe \
+	$(OUT_DIR)/release/wsh.exe
 	$(OUT_DIR)/debug/test.exe
 	$(OUT_DIR)/release/test.exe
 
@@ -340,32 +340,32 @@ $(TEST_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
 
 # ----------------------------------------------------------------------
-# shell
+# wsh
 
-SHELL_SRC = \
-	src/shell/main.cpp \
-	src/shell/verb.int.cpp \
+WSH_SRC = \
+	src/wsh/main.cpp \
+	src/wsh/verb.int.cpp \
 
-SHELL_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SHELL_SRC)))
+WSH_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(WSH_SRC)))
 
-$(OUT_DIR)/debug/shell.exe: $(SHELL_DEBUG_OBJ) $(OUT_DIR)/debug/tcatlib.lib $(OUT_DIR)/debug/pen.lib
+$(OUT_DIR)/debug/wsh.exe: $(WSH_DEBUG_OBJ) $(OUT_DIR)/debug/tcatlib.lib $(OUT_DIR)/debug/pen.lib
 	$(info $< --> $@)
 	@mkdir -p $(OUT_DIR)/debug
-	@$(LINK_CMD) -o $@ $(SHELL_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -ltcatlib -lole32 -lpen
+	@$(LINK_CMD) -o $@ $(WSH_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -ltcatlib -lole32 -lpen
 
-$(SHELL_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+$(WSH_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
 	$(info $< --> $@)
-	@mkdir -p $(OBJ_DIR)/debug/shell
+	@mkdir -p $(OBJ_DIR)/debug/wsh
 	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
 
-SHELL_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(SHELL_SRC)))
+WSH_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(WSH_SRC)))
 
-$(OUT_DIR)/release/shell.exe: $(SHELL_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.lib $(OUT_DIR)/release/pen.lib
+$(OUT_DIR)/release/wsh.exe: $(WSH_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.lib $(OUT_DIR)/release/pen.lib
 	$(info $< --> $@)
 	@mkdir -p $(OUT_DIR)/release
-	@$(LINK_CMD) -o $@ $(SHELL_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -ltcatlib -lole32 -lpen
+	@$(LINK_CMD) -o $@ $(WSH_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -ltcatlib -lole32 -lpen
 
-$(SHELL_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+$(WSH_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
-	@mkdir -p $(OBJ_DIR)/release/shell
+	@mkdir -p $(OBJ_DIR)/release/wsh
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
