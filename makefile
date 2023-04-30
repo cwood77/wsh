@@ -10,6 +10,8 @@ RELEASE_LNK_FLAGS_POST = -static-libgcc -static-libstdc++ -static
 all: \
 	$(OUT_DIR)/debug/console.dll \
 	$(OUT_DIR)/debug/cui.dll \
+	$(OUT_DIR)/debug/ex_proc_child.exe \
+	$(OUT_DIR)/debug/ex_proc_parent.exe \
 	$(OUT_DIR)/debug/exec.dll \
 	$(OUT_DIR)/debug/file.dll \
 	$(OUT_DIR)/debug/file.test.dll \
@@ -368,4 +370,64 @@ $(OUT_DIR)/release/wsh.exe: $(WSH_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.lib $(
 $(WSH_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@mkdir -p $(OBJ_DIR)/release/wsh
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
+# ex_proc_parent
+
+EX_PROC_PARENT_SRC = \
+	ex/proc_parent/main.cpp \
+
+EX_PROC_PARENT_DEBUG_OBJ = $(subst ex,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(EX_PROC_PARENT_SRC)))
+
+$(OUT_DIR)/debug/ex_proc_parent.exe: $(EX_PROC_PARENT_DEBUG_OBJ)
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/debug
+	@$(LINK_CMD) -o $@ $(EX_PROC_PARENT_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug
+
+$(EX_PROC_PARENT_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: ex/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/debug/proc_parent
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) -DUNICODE -Wno-main $< -o $@
+
+EX_PROC_PARENT_RELEASE_OBJ = $(subst ex,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(EX_PROC_PARENT_SRC)))
+
+$(OUT_DIR)/release/ex_proc_parent.exe: $(EX_PROC_PARENT_RELEASE_OBJ)
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/release
+	@$(LINK_CMD) -o $@ $(EX_PROC_PARENT_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release
+
+$(EX_PROC_PARENT_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: ex/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/release/proc_parent
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
+# ex_proc_child
+
+EX_PROC_CHILD_SRC = \
+	ex/proc_child/main.cpp \
+
+EX_PROC_CHILD_DEBUG_OBJ = $(subst ex,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(EX_PROC_CHILD_SRC)))
+
+$(OUT_DIR)/debug/ex_proc_child.exe: $(EX_PROC_CHILD_DEBUG_OBJ)
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/debug
+	@$(LINK_CMD) -o $@ $(EX_PROC_CHILD_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug
+
+$(EX_PROC_CHILD_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: ex/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/debug/proc_child
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) -DUNICODE -Wno-main $< -o $@
+
+EX_PROC_CHILD_RELEASE_OBJ = $(subst ex,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(EX_PROC_CHILD_SRC)))
+
+$(OUT_DIR)/release/ex_proc_child.exe: $(EX_PROC_CHILD_RELEASE_OBJ)
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/release
+	@$(LINK_CMD) -o $@ $(EX_PROC_CHILD_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release
+
+$(EX_PROC_CHILD_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: ex/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/release/proc_child
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
