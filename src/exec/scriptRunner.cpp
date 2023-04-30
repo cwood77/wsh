@@ -1,12 +1,10 @@
-#define WIN32_LEAN_AND_MEAN
 #include "../tcatlib/api.hpp"
 #include "scriptRunner.hpp"
 #include <stdexcept>
-#include <windows.h>
 
 namespace exec {
 
-void processRunner::execute(const char *command, console::iLog& l, bool wait)
+void processRunner::execute(HANDLE hJob, const char *command)
 {
    STARTUPINFOA si;
    ::memset(&si,0,sizeof(STARTUPINFOA));
@@ -31,9 +29,6 @@ void processRunner::execute(const char *command, console::iLog& l, bool wait)
    );
    if(!success)
       throw std::runtime_error("failed to create process");
-
-   if(wait)
-      ::WaitForSingleObject(pi.hProcess,INFINITE);
 
    ::CloseHandle(pi.hProcess);
    ::CloseHandle(pi.hThread);

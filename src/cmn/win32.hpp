@@ -164,6 +164,15 @@ private:
    std::map<T*,poolMember*> m_table;
 };
 
+class autoHandle {
+public:
+   autoHandle() : h(INVALID_HANDLE_VALUE) {}
+
+   ~autoHandle() { ::CloseHandle(h); }
+
+   HANDLE h;
+};
+
 class autoFindHandle {
 public:
    autoFindHandle() : h(INVALID_HANDLE_VALUE) {}
@@ -171,6 +180,21 @@ public:
    ~autoFindHandle() { ::FindClose(h); }
 
    HANDLE h;
+};
+
+template<class T>
+class shmem {
+public:
+   explicit shmem(const std::string& name);
+   ~shmem();
+
+   T* operator->();
+
+   T& operator*();
+
+private:
+   HANDLE m_h;
+   LPVOID *m_pPtr;
 };
 
 } // namespace cmn

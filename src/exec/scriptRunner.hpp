@@ -7,7 +7,7 @@ namespace exec {
 
 class processRunner : public iProcessRunner {
 public:
-   virtual void execute(const char *command, console::iLog& l, bool wait);
+   virtual void execute(HANDLE hJob, const char *command);
 };
 
 } // namespace exec
