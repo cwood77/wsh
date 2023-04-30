@@ -13,6 +13,7 @@ all: \
 	$(OUT_DIR)/debug/exec.dll \
 	$(OUT_DIR)/debug/file.dll \
 	$(OUT_DIR)/debug/file.test.dll \
+	$(OUT_DIR)/debug/ledit.dll \
 	$(OUT_DIR)/debug/shell.exe \
 	$(OUT_DIR)/debug/tcatbin.dll \
 	$(OUT_DIR)/debug/test.exe \
@@ -21,6 +22,7 @@ all: \
 	$(OUT_DIR)/release/exec.dll \
 	$(OUT_DIR)/release/file.dll \
 	$(OUT_DIR)/release/file.test.dll \
+	$(OUT_DIR)/release/ledit.dll \
 	$(OUT_DIR)/release/shell.exe \
 	$(OUT_DIR)/release/tcatbin.dll \
 	$(OUT_DIR)/release/test.exe
@@ -252,10 +254,10 @@ CUI_SRC = \
 
 CUI_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(CUI_SRC)))
 
-$(OUT_DIR)/debug/cui.dll: $(CUI_DEBUG_OBJ) $(OUT_DIR)/debug/tcatlib.lib
+$(OUT_DIR)/debug/cui.dll: $(CUI_DEBUG_OBJ) $(OUT_DIR)/debug/tcatlib.lib $(OUT_DIR)/debug/pen.lib
 	$(info $< --> $@)
 	@mkdir -p $(OUT_DIR)/debug
-	@$(LINK_CMD) -shared -o $@ $(CUI_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -ltcatlib
+	@$(LINK_CMD) -shared -o $@ $(CUI_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -ltcatlib -lpen
 
 $(CUI_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
 	$(info $< --> $@)
@@ -264,14 +266,45 @@ $(CUI_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
 
 CUI_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(CUI_SRC)))
 
-$(OUT_DIR)/release/cui.dll: $(CUI_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.lib
+$(OUT_DIR)/release/cui.dll: $(CUI_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.lib $(OUT_DIR)/release/pen.lib
 	$(info $< --> $@)
 	@mkdir -p $(OUT_DIR)/release
-	@$(LINK_CMD) -shared -o $@ $(CUI_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -ltcatlib
+	@$(LINK_CMD) -shared -o $@ $(CUI_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -ltcatlib -lpen
 
 $(CUI_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@mkdir -p $(OBJ_DIR)/release/cui
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
+# ledit
+
+LEDIT_SRC = \
+	src/ledit/api.cpp \
+	src/ledit/printer.cpp \
+
+LEDIT_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(LEDIT_SRC)))
+
+$(OUT_DIR)/debug/ledit.dll: $(LEDIT_DEBUG_OBJ) $(OUT_DIR)/debug/tcatlib.lib $(OUT_DIR)/debug/pen.lib
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/debug
+	@$(LINK_CMD) -shared -o $@ $(LEDIT_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -ltcatlib -lpen
+
+$(LEDIT_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/debug/ledit
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+LEDIT_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(LEDIT_SRC)))
+
+$(OUT_DIR)/release/ledit.dll: $(LEDIT_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.lib $(OUT_DIR)/release/pen.lib
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/release
+	@$(LINK_CMD) -shared -o $@ $(LEDIT_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -ltcatlib -lpen
+
+$(LEDIT_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/release/ledit
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
 
 # ----------------------------------------------------------------------

@@ -7,6 +7,7 @@
 #include "../cui/pen.hpp"
 #include "../file/api.hpp"
 #include "../file/manager.hpp"
+#include "../ledit/api.hpp"
 #include "../tcatlib/api.hpp"
 #include <memory>
 
@@ -71,6 +72,10 @@ void playCommand::run(console::iLog& l)
    tcat::typePtr<cui::iCannedUserInput> _in2;
    _in2->chain(*_in);
    cmn::autoService<cui::iUserInput> _inSvc(*svcMan,*_in2);
+   tcat::typePtr<cui::iStylePrefs> _stylePrefs;
+   tcat::typePtr<cui::iStyler> _styler;
+   _styler->bind(*_stylePrefs,_pen.str());
+   cmn::autoService<cui::iStyler> _stylerSvc(*svcMan,*_styler);
 
    l.writeLnDebug("loading canned input");
    if(!oCannedInputFile.empty())
@@ -94,10 +99,49 @@ void playCommand::run(console::iLog& l)
 
    l.writeLnDebug("switching to cui");
    pen::object::setupStdOut();
-   _pen.str() << pen::showCursor(false);
+   //_pen.str() << pen::showCursor(false);
+
+   //_pen.str() << pen::fgcol(pen::kYellow) << "\xea:" << pen::fgcol(pen::kDefault) << std::endl;
+
+   // listen for chars
+   //
+   // line editing
+   // - esc
+   //   clear line
+   // - bs
+   //   remove char
+   // - left arrow/right arrow/home/end
+   //   move cursor
+   // - other
+   //   append character
+   //   display guess text if this matches history
+   //
+   // history
+   // - up arrow/down arrow
+   //   navigate history
+   //
+   // completion
+   // - tab/shift-tab
+   //   take entered chars and search -or- cycle through searches
+   // - space
+   //   decide if this is a command, and if so, pull up help
+   //
+   // guess
+   // - ctrl-tab
+   //   take a word of the guess text
+   // - ctrl-end
+   //   take all guess text and jump to end
+   //
+   // exec
+   // - enter
+   //   break send command
+   //
+
+   tcat::typePtr<ledit::iCmdLineEditor> editor;
+   editor->run();
 
    // return to normalcy
-   _pen.str() << pen::fgcol(pen::kDefault) << pen::bgcol(pen::kDefault) << pen::showCursor();
+   _pen.str() << pen::fgcol(pen::kDefault) << pen::bgcol(pen::kDefault);// << pen::showCursor();
 }
 
 } // anonymous namespace

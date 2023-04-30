@@ -1,6 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include "../tcatlib/api.hpp"
 #include "api.hpp"
+#include "pen.hpp"
 #include <conio.h>
 #include <windows.h>
 
@@ -46,6 +47,64 @@ private:
 };
 
 tcatExposeTypeAs(cannedUserInput,iCannedUserInput);
+
+class stylePrefs : public iStylePrefs {
+public:
+   virtual void set(styles s, std::ostream& o)
+   {
+      switch(s)
+      {
+         case kPrompt:
+            o << pen::fgcol(pen::kYellow);
+            break;
+         default:
+         case kNormal:
+            o << pen::fgcol(pen::kDefault);
+            break;
+         case kHint:
+            o << pen::fgcol(pen::kBlack,true);
+            break;
+         case kHelp:
+            o << pen::fgcol(pen::kBlue,true);
+            break;
+         case kError:
+            o << pen::fgcol(pen::kRed,true);
+            break;
+      }
+   }
+};
+
+tcatExposeTypeAs(stylePrefs,iStylePrefs);
+
+class styler : public iStyler {
+public:
+   virtual void bind(iStylePrefs& s, std::ostream& p)
+   {
+      m_pPrefs = &s;
+      m_pStream = &p;
+   }
+
+   virtual iStyler& with(iStylePrefs::styles s, std::function<void(std::ostream&)> f)
+   {
+      m_pPrefs->set(s,*m_pStream);
+      try
+      {
+         f(*m_pStream);
+      }
+      catch(...)
+      {
+         m_pPrefs->set(iStylePrefs::kNormal,*m_pStream);
+         throw;
+      }
+      return *this;
+   }
+
+private:
+   iStylePrefs *m_pPrefs;
+   std::ostream *m_pStream;
+};
+
+tcatExposeTypeAs(styler,iStyler);
 
 } // namespace cui
 
