@@ -13,17 +13,9 @@
 
 namespace {
 
-class playCommand : public console::iCommand {
+class intCommand : public console::iCommand {
 public:
-   playCommand() : oNoAnimations(false), oNoRandom(false) {}
-
-   std::string oServerAddr;
-   std::string oAccount;
-   std::string oPassword;
-
    std::string oCannedInputFile;
-   bool        oNoAnimations;
-   bool        oNoRandom;
 
    virtual void run(console::iLog& l);
 };
@@ -33,27 +25,16 @@ protected:
    virtual console::verbBase *inflate()
    {
       std::unique_ptr<console::verbBase> v(
-         new console::verb<playCommand>("--play"));
+         new console::verb<intCommand>("--int"));
 
       v->addParameter(
-         console::stringParameter::required(offsetof(playCommand,oServerAddr)));
-      v->addParameter(
-         console::stringParameter::required(offsetof(playCommand,oAccount)));
-      v->addParameter(
-         console::stringParameter::required(offsetof(playCommand,oPassword)));
-
-      v->addParameter(
-         console::stringParameter::optional(offsetof(playCommand,oCannedInputFile)));
-      v->addOption(
-         *new console::boolOption("--noAni",offsetof(playCommand,oNoAnimations)));
-      v->addOption(
-         *new console::boolOption("--noRnd",offsetof(playCommand,oNoRandom)));
+         console::stringParameter::optional(offsetof(intCommand,oCannedInputFile)));
 
       return v.release();
    }
 } gVerb;
 
-void playCommand::run(console::iLog& l)
+void intCommand::run(console::iLog& l)
 {
    tcat::typePtr<file::iFileManager> fMan;
    l.writeLnDebug("loading config settings (optional)");
