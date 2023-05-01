@@ -3,7 +3,6 @@
 #include "../cmn/service.hpp"
 #include "../cui/pen.hpp"
 #include "../exec/cancel.hpp"
-#include "../outcor/api.hpp"
 #include "../tcatlib/api.hpp"
 #include "api.hpp"
 #include "printer.hpp"
@@ -13,10 +12,10 @@ namespace ledit {
    
 class cmdLineEditor : public iCmdLineEditor {
 public:
-   virtual void run();
+   virtual std::string run();
 };
 
-void cmdLineEditor::run()
+std::string cmdLineEditor::run()
 {
    tcat::typePtr<cancel::iKeyMonitor> cancel;
    tcat::typePtr<cmn::serviceManager> svcMan;
@@ -56,19 +55,7 @@ void cmdLineEditor::run()
          else if(state.readyToSend)
          {
             // send it
-
-            styler.hint([&](auto& o)
-            { o << std::endl << "[running '" << state.userText << "']" << std::endl; });
-
-            auto& out = svcMan->demand<outcor::iOutCorrelator>();
-            tcat::typePtr<outcor::iSubprocessFacade> pSub;
-            pSub->beginExecute(out,state.userText);
-            pSub->join();
-
-            styler.hint([&](auto& o)
-            { o << std::endl << "[done: '" << state.userText << "']" << std::endl; });
-
-            return;
+            return state.userText;
          }
       }
 

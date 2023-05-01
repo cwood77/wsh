@@ -380,6 +380,7 @@ $(TEST_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 
 WSH_SRC = \
 	src/wsh/main.cpp \
+	src/wsh/runLoop.cpp \
 	src/wsh/verb.int.cpp \
 
 WSH_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(WSH_SRC)))

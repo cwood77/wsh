@@ -7,9 +7,9 @@
 #include "../cui/pen.hpp"
 #include "../file/api.hpp"
 #include "../file/manager.hpp"
-#include "../ledit/api.hpp"
 #include "../outcor/api.hpp"
 #include "../tcatlib/api.hpp"
+#include "runLoop.hpp"
 #include <memory>
 
 namespace {
@@ -121,8 +121,7 @@ void intCommand::run(console::iLog& l)
    //   break send command
    //
 
-   tcat::typePtr<ledit::iCmdLineEditor> editor;
-   editor->run();
+   wsh::runLoop().start();
 
    // return to normalcy
    _pen.str() << pen::fgcol(pen::kDefault) << pen::bgcol(pen::kDefault);// << pen::showCursor();

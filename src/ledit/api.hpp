@@ -47,7 +47,7 @@ public:
 class iCmdLineEditor {
 public:
    virtual ~iCmdLineEditor() {}
-   virtual void run() = 0;
+   virtual std::string run() = 0;
 };
 
 class iCmdLineKeyHandler {
