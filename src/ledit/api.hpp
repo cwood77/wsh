@@ -42,6 +42,8 @@ public:
    std::string helpText;
    bool readyToSend;
    size_t lastNonPromptLength;
+
+   std::string resolved;
 };
 
 class iCmdLineEditor {

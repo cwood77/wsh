@@ -55,7 +55,7 @@ std::string cmdLineEditor::run()
          else if(state.readyToSend)
          {
             // send it
-            return state.userText;
+            return state.resolved.empty() ? state.userText : state.resolved;
          }
       }
 

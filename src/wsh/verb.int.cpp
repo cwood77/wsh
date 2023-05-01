@@ -8,6 +8,7 @@
 #include "../file/api.hpp"
 #include "../file/manager.hpp"
 #include "../outcor/api.hpp"
+#include "../resolve/api.hpp"
 #include "../tcatlib/api.hpp"
 #include "runLoop.hpp"
 #include <memory>
@@ -60,6 +61,8 @@ void intCommand::run(console::iLog& l)
    cmn::autoService<cui::iStyler> _stylerSvc(*svcMan,*_styler);
    tcat::typePtr<outcor::iOutCorrelator> _out;
    cmn::autoService<outcor::iOutCorrelator> _outSvc(*svcMan,*_out);
+   tcat::typePtr<resolve::iProgramResolver> _res;
+   cmn::autoService<resolve::iProgramResolver> _resSvc(*svcMan,*_res);
 
    l.writeLnDebug("loading canned input");
    if(!oCannedInputFile.empty())

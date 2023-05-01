@@ -17,6 +17,7 @@ all: \
 	$(OUT_DIR)/debug/file.test.dll \
 	$(OUT_DIR)/debug/ledit.dll \
 	$(OUT_DIR)/debug/outcor.dll \
+	$(OUT_DIR)/debug/resolve.dll \
 	$(OUT_DIR)/debug/tcatbin.dll \
 	$(OUT_DIR)/debug/test.exe \
 	$(OUT_DIR)/debug/wsh.exe \
@@ -27,6 +28,7 @@ all: \
 	$(OUT_DIR)/release/file.test.dll \
 	$(OUT_DIR)/release/ledit.dll \
 	$(OUT_DIR)/release/outcor.dll \
+	$(OUT_DIR)/release/resolve.dll \
 	$(OUT_DIR)/release/tcatbin.dll \
 	$(OUT_DIR)/release/test.exe \
 	$(OUT_DIR)/release/wsh.exe
@@ -342,6 +344,36 @@ $(OUT_DIR)/release/outcor.dll: $(OUTCOR_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.
 $(OUTCOR_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@mkdir -p $(OBJ_DIR)/release/outcor
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
+# resolve
+
+RESOLVE_SRC = \
+	src/resolve/api.cpp \
+
+RESOLVE_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(RESOLVE_SRC)))
+
+$(OUT_DIR)/debug/resolve.dll: $(RESOLVE_DEBUG_OBJ) $(OUT_DIR)/debug/tcatlib.lib
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/debug
+	@$(LINK_CMD) -shared -o $@ $(RESOLVE_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -ltcatlib
+
+$(RESOLVE_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/debug/resolve
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+RESOLVE_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(RESOLVE_SRC)))
+
+$(OUT_DIR)/release/resolve.dll: $(RESOLVE_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.lib
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/release
+	@$(LINK_CMD) -shared -o $@ $(RESOLVE_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -ltcatlib
+
+$(RESOLVE_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/release/resolve
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
 
 # ----------------------------------------------------------------------
