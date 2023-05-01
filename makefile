@@ -16,6 +16,7 @@ all: \
 	$(OUT_DIR)/debug/file.dll \
 	$(OUT_DIR)/debug/file.test.dll \
 	$(OUT_DIR)/debug/ledit.dll \
+	$(OUT_DIR)/debug/outcor.dll \
 	$(OUT_DIR)/debug/tcatbin.dll \
 	$(OUT_DIR)/debug/test.exe \
 	$(OUT_DIR)/debug/wsh.exe \
@@ -25,6 +26,7 @@ all: \
 	$(OUT_DIR)/release/file.dll \
 	$(OUT_DIR)/release/file.test.dll \
 	$(OUT_DIR)/release/ledit.dll \
+	$(OUT_DIR)/release/outcor.dll \
 	$(OUT_DIR)/release/tcatbin.dll \
 	$(OUT_DIR)/release/test.exe \
 	$(OUT_DIR)/release/wsh.exe
@@ -309,6 +311,37 @@ $(OUT_DIR)/release/ledit.dll: $(LEDIT_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.li
 $(LEDIT_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@mkdir -p $(OBJ_DIR)/release/ledit
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
+# outcor
+
+OUTCOR_SRC = \
+	src/outcor/facade.cpp \
+	src/outcor/outcor.cpp \
+
+OUTCOR_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(OUTCOR_SRC)))
+
+$(OUT_DIR)/debug/outcor.dll: $(OUTCOR_DEBUG_OBJ) $(OUT_DIR)/debug/tcatlib.lib $(OUT_DIR)/debug/pen.lib
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/debug
+	@$(LINK_CMD) -shared -o $@ $(OUTCOR_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -ltcatlib -lpen
+
+$(OUTCOR_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/debug/outcor
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+OUTCOR_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(OUTCOR_SRC)))
+
+$(OUT_DIR)/release/outcor.dll: $(OUTCOR_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.lib $(OUT_DIR)/release/pen.lib
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/release
+	@$(LINK_CMD) -shared -o $@ $(OUTCOR_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -ltcatlib -lpen
+
+$(OUTCOR_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/release/outcor
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
 
 # ----------------------------------------------------------------------

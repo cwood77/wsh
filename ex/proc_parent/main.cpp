@@ -5,7 +5,8 @@
 #include <stdio.h> 
 #include <strsafe.h>
 
-#define BUFSIZE 4096 
+//#define BUFSIZE 4096  // cdw
+#define BUFSIZE 10 
  
 HANDLE g_hChildStd_IN_Rd = NULL;
 HANDLE g_hChildStd_IN_Wr = NULL;
@@ -194,6 +195,17 @@ void ReadFromPipe(void)
    { 
       bSuccess = ReadFile( g_hChildStd_OUT_Rd, chBuf, BUFSIZE, &dwRead, NULL);
       if( ! bSuccess || dwRead == 0 ) break; 
+
+      DWORD avail = 0;
+      bSuccess = ::PeekNamedPipe(
+         g_hChildStd_OUT_Rd, // [in]            HANDLE  hNamedPipe,
+         NULL,               // [out, optional] LPVOID  lpBuffer,
+         0,                  // [in]            DWORD   nBufferSize,
+         NULL,               // [out, optional] LPDWORD lpBytesRead,
+         &avail,             // [out, optional] LPDWORD lpTotalBytesAvail,
+         NULL                // [out, optional] LPDWORD lpBytesLeftThisMessage
+      );
+      ::printf("peek=%lu, s=%s\r\n", avail, bSuccess ? "y" : "n");
 
       bSuccess = WriteFile(hParentStdOut, chBuf, 
                            dwRead, &dwWritten, NULL);

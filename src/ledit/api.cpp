@@ -1,7 +1,9 @@
 #define WIN32_LEAN_AND_MEAN
+#include "../cmn/autoPtr.hpp"
 #include "../cmn/service.hpp"
 #include "../cui/pen.hpp"
 #include "../exec/cancel.hpp"
+#include "../outcor/api.hpp"
 #include "../tcatlib/api.hpp"
 #include "api.hpp"
 #include "printer.hpp"
@@ -54,6 +56,18 @@ void cmdLineEditor::run()
          else if(state.readyToSend)
          {
             // send it
+
+            styler.hint([&](auto& o)
+            { o << std::endl << "[running '" << state.userText << "']" << std::endl; });
+
+            auto& out = svcMan->demand<outcor::iOutCorrelator>();
+            tcat::typePtr<outcor::iSubprocessFacade> pSub;
+            pSub->beginExecute(out,state.userText);
+            pSub->join();
+
+            styler.hint([&](auto& o)
+            { o << std::endl << "[done: '" << state.userText << "']" << std::endl; });
+
             return;
          }
       }

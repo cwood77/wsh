@@ -27,17 +27,6 @@ public:
       iOutPipe *pStdErr = NULL) = 0;
 };
 
-#if 0
-class pipeReadingThread : public cmn::iThread {
-};
-
-class iOutPipeSet {
-public:
-   virtual iOutPipe& out() = 0;
-   virtual iOutPipe& err() = 0;
-};
-#endif
-
 } // namespace exec
 
 #endif // ___exec_api___

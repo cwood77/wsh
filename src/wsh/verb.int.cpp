@@ -8,6 +8,7 @@
 #include "../file/api.hpp"
 #include "../file/manager.hpp"
 #include "../ledit/api.hpp"
+#include "../outcor/api.hpp"
 #include "../tcatlib/api.hpp"
 #include <memory>
 
@@ -57,6 +58,8 @@ void intCommand::run(console::iLog& l)
    tcat::typePtr<cui::iStyler> _styler;
    _styler->bind(*_stylePrefs,_pen.str());
    cmn::autoService<cui::iStyler> _stylerSvc(*svcMan,*_styler);
+   tcat::typePtr<outcor::iOutCorrelator> _out;
+   cmn::autoService<outcor::iOutCorrelator> _outSvc(*svcMan,*_out);
 
    l.writeLnDebug("loading canned input");
    if(!oCannedInputFile.empty())

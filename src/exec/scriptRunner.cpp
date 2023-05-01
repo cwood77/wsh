@@ -48,6 +48,8 @@ void outPipe::processLoop(std::function<void(const std::string&)> f, size_t buff
    }
 }
 
+tcatExposeTypeAs(outPipe,iOutPipe);
+
 void processRunner::execute(HANDLE hJob, const char *command, iOutPipe *pStdOut, iOutPipe *pStdErr)
 {
    STARTUPINFOA si;
