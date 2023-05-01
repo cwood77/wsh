@@ -132,6 +132,7 @@ $(CONSOLE_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 # exec
 
 EXEC_SRC = \
+	src/exec/cancel.cpp \
 	src/exec/scriptRunner.cpp \
 
 EXEC_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(EXEC_SRC)))

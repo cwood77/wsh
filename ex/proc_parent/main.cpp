@@ -47,13 +47,13 @@ int _tmain(int argc, const TCHAR *argv[])  // cdw -modified
 
 // Create a pipe for the child process's STDIN. 
  
-   if (! CreatePipe(&g_hChildStd_IN_Rd, &g_hChildStd_IN_Wr, &saAttr, 0)) 
-      ErrorExit(TEXT("Stdin CreatePipe")); 
+   //if (! CreatePipe(&g_hChildStd_IN_Rd, &g_hChildStd_IN_Wr, &saAttr, 0)) 
+      //ErrorExit(TEXT("Stdin CreatePipe")); 
 
 // Ensure the write handle to the pipe for STDIN is not inherited. 
  
-   if ( ! SetHandleInformation(g_hChildStd_IN_Wr, HANDLE_FLAG_INHERIT, 0) )
-      ErrorExit(TEXT("Stdin SetHandleInformation")); 
+   //if ( ! SetHandleInformation(g_hChildStd_IN_Wr, HANDLE_FLAG_INHERIT, 0) )
+      //ErrorExit(TEXT("Stdin SetHandleInformation")); 
  
 // Create the child process. 
    
@@ -65,6 +65,7 @@ int _tmain(int argc, const TCHAR *argv[])  // cdw -modified
    if (argc == 1) 
       ErrorExit(TEXT("Please specify an input file.\n")); 
 
+#if 0
    g_hInputFile = CreateFile(
        argv[1], 
        GENERIC_READ, 
@@ -81,8 +82,9 @@ int _tmain(int argc, const TCHAR *argv[])  // cdw -modified
 // Data is written to the pipe's buffers, so it is not necessary to wait
 // until the child process is running before writing data.
  
-   WriteToPipe(); 
+   //WriteToPipe();  // cdw
    printf( "\n->Contents of %S written to child STDIN pipe.\n", argv[1]);
+#endif
  
 // Read from pipe that is the standard output for child process. 
  
@@ -117,7 +119,7 @@ void CreateChildProcess()
    siStartInfo.cb = sizeof(STARTUPINFO); 
    siStartInfo.hStdError = g_hChildStd_OUT_Wr;
    siStartInfo.hStdOutput = g_hChildStd_OUT_Wr;
-   siStartInfo.hStdInput = g_hChildStd_IN_Rd;
+   siStartInfo.hStdInput = GetStdHandle(STD_INPUT_HANDLE); //g_hChildStd_IN_Rd;
    siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
  
 // Create the child process. 

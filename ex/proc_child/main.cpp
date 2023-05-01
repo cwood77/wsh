@@ -28,6 +28,8 @@ int main(void)
    // It relies on the pipe buffers to ensure that no data is lost.
    // Larger applications would use more advanced process control.
 
+   ::Sleep(10*1000);
+
    for (;;) 
    { 
    // Read from standard input and stop on error or no data.
