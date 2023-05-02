@@ -17,6 +17,7 @@ all: \
 	$(OUT_DIR)/debug/file.test.dll \
 	$(OUT_DIR)/debug/ledit.dll \
 	$(OUT_DIR)/debug/outcor.dll \
+	$(OUT_DIR)/debug/outcor.test.dll \
 	$(OUT_DIR)/debug/resolve.dll \
 	$(OUT_DIR)/debug/tcatbin.dll \
 	$(OUT_DIR)/debug/q.exe \
@@ -29,6 +30,7 @@ all: \
 	$(OUT_DIR)/release/file.test.dll \
 	$(OUT_DIR)/release/ledit.dll \
 	$(OUT_DIR)/release/outcor.dll \
+	$(OUT_DIR)/release/outcor.test.dll \
 	$(OUT_DIR)/release/resolve.dll \
 	$(OUT_DIR)/release/tcatbin.dll \
 	$(OUT_DIR)/release/q.exe \
@@ -325,6 +327,9 @@ OUTCOR_SRC = \
 	src/outcor/outcor.cpp \
 	src/q/tailCmd.cpp \
 
+OUTCOR_TEST_SRC = \
+	src/outcor/facade.test.cpp \
+
 OUTCOR_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(OUTCOR_SRC)))
 
 $(OUT_DIR)/debug/outcor.dll: $(OUTCOR_DEBUG_OBJ) $(OUT_DIR)/debug/tcatlib.lib $(OUT_DIR)/debug/pen.lib
@@ -347,6 +352,30 @@ $(OUT_DIR)/release/outcor.dll: $(OUTCOR_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.
 $(OUTCOR_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@mkdir -p $(OBJ_DIR)/release/outcor
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+OUTCOR_TEST_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(OUTCOR_TEST_SRC)))
+
+$(OUT_DIR)/debug/outcor.test.dll: $(OUTCOR_TEST_DEBUG_OBJ) $(OUT_DIR)/debug/tcatlib.lib
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/debug
+	@$(LINK_CMD) -shared -o $@ $(OUTCOR_TEST_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -ltcatlib
+
+$(OUTCOR_TEST_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/debug/outcor.test
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+OUTCOR_TEST_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(OUTCOR_TEST_SRC)))
+
+$(OUT_DIR)/release/outcor.test.dll: $(OUTCOR_TEST_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.lib
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/release
+	@$(LINK_CMD) -shared -o $@ $(OUTCOR_TEST_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -ltcatlib
+
+$(OUTCOR_TEST_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/release/outcor.test
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
 
 # ----------------------------------------------------------------------
