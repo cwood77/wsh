@@ -10,7 +10,7 @@ public:
    virtual std::string tryResolve(const std::string& hintPath)
    {
       if(hintPath == "q")
-         return "bin\\out\\debug\\quit.exe";
+         return "bin\\out\\debug\\q.exe";
       else
          return "";
    }

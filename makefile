@@ -19,6 +19,7 @@ all: \
 	$(OUT_DIR)/debug/outcor.dll \
 	$(OUT_DIR)/debug/resolve.dll \
 	$(OUT_DIR)/debug/tcatbin.dll \
+	$(OUT_DIR)/debug/q.exe \
 	$(OUT_DIR)/debug/test.exe \
 	$(OUT_DIR)/debug/wsh.exe \
 	$(OUT_DIR)/release/console.dll \
@@ -30,6 +31,7 @@ all: \
 	$(OUT_DIR)/release/outcor.dll \
 	$(OUT_DIR)/release/resolve.dll \
 	$(OUT_DIR)/release/tcatbin.dll \
+	$(OUT_DIR)/release/q.exe \
 	$(OUT_DIR)/release/test.exe \
 	$(OUT_DIR)/release/wsh.exe
 	$(OUT_DIR)/debug/test.exe
@@ -321,6 +323,7 @@ $(LEDIT_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 OUTCOR_SRC = \
 	src/outcor/facade.cpp \
 	src/outcor/outcor.cpp \
+	src/q/tailCmd.cpp \
 
 OUTCOR_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(OUTCOR_SRC)))
 
@@ -374,6 +377,36 @@ $(OUT_DIR)/release/resolve.dll: $(RESOLVE_RELEASE_OBJ) $(OUT_DIR)/release/tcatli
 $(RESOLVE_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@mkdir -p $(OBJ_DIR)/release/resolve
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
+# quitcmd
+
+QUITCMD_SRC = \
+	src/q/main.cpp \
+
+QUITCMD_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(QUITCMD_SRC)))
+
+$(OUT_DIR)/debug/q.exe: $(QUITCMD_DEBUG_OBJ) $(OUT_DIR)/debug/tcatlib.lib
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/debug
+	@$(LINK_CMD) -o $@ $(QUITCMD_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -ltcatlib
+
+$(QUITCMD_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/debug/q
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+QUITCMD_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(QUITCMD_SRC)))
+
+$(OUT_DIR)/release/q.exe: $(QUITCMD_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.lib
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/release
+	@$(LINK_CMD) -o $@ $(QUITCMD_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -ltcatlib
+
+$(QUITCMD_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/release/q
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
 
 # ----------------------------------------------------------------------

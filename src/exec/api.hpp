@@ -24,7 +24,8 @@ public:
 
    virtual void execute(HANDLE hJob, const char *command,
       iOutPipe *pStdOut = NULL,
-      iOutPipe *pStdErr = NULL) = 0;
+      iOutPipe *pStdErr = NULL,
+      std::function<void(DWORD)> onCreate = std::function<void(DWORD)>()) = 0;
 };
 
 } // namespace exec

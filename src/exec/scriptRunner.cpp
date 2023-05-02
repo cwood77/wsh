@@ -50,7 +50,7 @@ void outPipe::processLoop(std::function<void(const std::string&)> f, size_t buff
 
 tcatExposeTypeAs(outPipe,iOutPipe);
 
-void processRunner::execute(HANDLE hJob, const char *command, iOutPipe *pStdOut, iOutPipe *pStdErr)
+void processRunner::execute(HANDLE hJob, const char *command, iOutPipe *pStdOut, iOutPipe *pStdErr, std::function<void(DWORD)> onCreate)
 {
    STARTUPINFOA si;
    ::memset(&si,0,sizeof(STARTUPINFOA));
@@ -72,7 +72,7 @@ void processRunner::execute(HANDLE hJob, const char *command, iOutPipe *pStdOut,
       NULL,                                // lpProcessAttributes,
       NULL,                                // lpThreadAttributes,
       TRUE,                                // bInheritHandles,
-      0,                                   // dwCreationFlags,
+      CREATE_SUSPENDED,                    // dwCreationFlags,
       NULL,                                // lpEnvironment,
       NULL,                                // lpCurrentDirectory,
       &si,                                 // lpStartupInfo,
@@ -80,6 +80,9 @@ void processRunner::execute(HANDLE hJob, const char *command, iOutPipe *pStdOut,
    );
    if(!success)
       throw std::runtime_error("failed to create process");
+
+   onCreate(pi.dwProcessId);
+   ::ResumeThread(pi.hThread);
 
    ::CloseHandle(pi.hProcess);
    ::CloseHandle(pi.hThread);

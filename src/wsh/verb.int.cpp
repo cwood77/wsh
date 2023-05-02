@@ -1,6 +1,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include "../cmn/autoPtr.hpp"
 #include "../cmn/service.hpp"
+#include "../cmn/win32.hpp"
+#include "../cmn/wshsubproc.hpp"
 #include "../console/arg.hpp"
 #include "../console/log.hpp"
 #include "../cui/api.hpp"
@@ -47,6 +49,13 @@ void intCommand::run(console::iLog& l)
    ));
    pFile->tie(l);
 
+   l.writeLnDebug("setup the shmem");
+   cmn::shmem<cmn::wshMasterBlock> shmemMaster(
+      cmn::buildWshMasterShmemName(::GetCurrentProcessId()));
+   if(shmemMaster.existed())
+      throw std::runtime_error("shmem already exists?");
+   shmemMaster->version = cmn::wshMasterBlock::kCurrentVersion;
+
    l.writeLnDebug("compiling services");
    tcat::typePtr<cmn::serviceManager> svcMan;
    pen::object _pen(std::cout);
@@ -63,6 +72,7 @@ void intCommand::run(console::iLog& l)
    cmn::autoService<outcor::iOutCorrelator> _outSvc(*svcMan,*_out);
    tcat::typePtr<resolve::iProgramResolver> _res;
    cmn::autoService<resolve::iProgramResolver> _resSvc(*svcMan,*_res);
+   cmn::autoService<cmn::wshMasterBlock> _shmemMasterSvc(*svcMan,*shmemMaster);
 
    l.writeLnDebug("loading canned input");
    if(!oCannedInputFile.empty())

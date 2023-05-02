@@ -185,16 +185,53 @@ public:
 template<class T>
 class shmem {
 public:
-   explicit shmem(const std::string& name);
-   ~shmem();
+   explicit shmem(const std::string& name)
+   {
+      m_h = ::CreateFileMappingA(
+         INVALID_HANDLE_VALUE,
+         NULL,
+         PAGE_READWRITE,
+         0,
+         sizeof(T),
+         name.c_str()
+      );
+      if(m_h == INVALID_HANDLE_VALUE)
+         throw std::runtime_error("unable to create shmem");
+      m_existed = (::GetLastError() == ERROR_ALREADY_EXISTS);
 
-   T* operator->();
+      m_pPtr = ::MapViewOfFile(
+         m_h,
+         FILE_MAP_ALL_ACCESS,
+         0,
+         0,
+         0
+      );
+      if(m_pPtr == 0)
+         throw std::runtime_error("unable to map shmem");
+   }
 
-   T& operator*();
+   ~shmem()
+   {
+      ::UnmapViewOfFile(m_pPtr);
+      ::CloseHandle(m_h);
+   }
+
+   T* operator->()
+   {
+      return reinterpret_cast<T*>(m_pPtr);
+   }
+
+   T& operator*()
+   {
+      return *reinterpret_cast<T*>(m_pPtr);
+   }
+
+   bool existed() const { return m_existed; }
 
 private:
    HANDLE m_h;
-   LPVOID *m_pPtr;
+   LPVOID m_pPtr;
+   bool m_existed;
 };
 
 } // namespace cmn
