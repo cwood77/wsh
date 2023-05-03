@@ -7,6 +7,7 @@
 #include "../console/log.hpp"
 #include "../cui/api.hpp"
 #include "../cui/pen.hpp"
+#include "../exec/cancel.hpp"
 #include "../file/api.hpp"
 #include "../file/manager.hpp"
 #include "../outcor/api.hpp"
@@ -73,6 +74,8 @@ void intCommand::run(console::iLog& l)
    tcat::typePtr<resolve::iProgramResolver> _res;
    cmn::autoService<resolve::iProgramResolver> _resSvc(*svcMan,*_res);
    cmn::autoService<cmn::wshMasterBlock> _shmemMasterSvc(*svcMan,*shmemMaster);
+   tcat::typePtr<cancel::iKeyMonitor> _cancel;
+   cmn::autoService<cancel::iKeyMonitor> _cancelSvc(*svcMan,*_cancel);
 
    l.writeLnDebug("loading canned input");
    if(!oCannedInputFile.empty())

@@ -18,11 +18,18 @@ public:
       size_t bufferSize = 4096) = 0;
 };
 
+class iJob {
+public:
+   virtual ~iJob() {}
+
+   virtual void terminate() = 0;
+};
+
 class iProcessRunner {
 public:
    virtual ~iProcessRunner() {}
 
-   virtual void execute(HANDLE hJob, const char *command,
+   virtual void execute(iJob *pJob, const char *command,
       iOutPipe *pStdOut = NULL,
       iOutPipe *pStdErr = NULL,
       std::function<void(DWORD)> onCreate = std::function<void(DWORD)>()) = 0;

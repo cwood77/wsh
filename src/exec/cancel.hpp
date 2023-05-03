@@ -2,8 +2,8 @@
 #define ___exec_cancel___
 
 #define WIN32_LEAN_AND_MEAN
-#include "../cmn/service.hpp"
 #include "windows.h"
+#include <functional>
 
 namespace cancel {
 
@@ -12,29 +12,19 @@ public:
    virtual ~iKeyMonitor() {}
 
    virtual void install(bool add) = 0;
-   virtual void recordThreadIo(HANDLE h, bool add) = 0;
 
-   virtual bool wasAborted() const = 0;
+   virtual void waitForCancelUntil(HANDLE h, std::function<void(void)> f) = 0;
+   virtual void clearAborted() = 0;
 };
 
-class autoInstallKeyMonitor {
+class autoInstallMonitor {
 public:
-   explicit autoInstallKeyMonitor(iKeyMonitor& k) : m_k(k) { m_k.install(true); }
-   ~autoInstallKeyMonitor() { m_k.install(false); }
+   explicit autoInstallMonitor(iKeyMonitor& k) : m_k(k)
+   { m_k.clearAborted(); m_k.install(true); }
+   ~autoInstallMonitor() { m_k.install(false); }
 
 private:
    iKeyMonitor& m_k;
-};
-
-class autoInstallSyncIo {
-public:
-   autoInstallSyncIo(iKeyMonitor& k, HANDLE h) : m_k(k), m_h(h)
-   { m_k.recordThreadIo(m_h,true); }
-   ~autoInstallSyncIo() { m_k.recordThreadIo(m_h,false); }
-
-private:
-   iKeyMonitor& m_k;
-   HANDLE m_h;
 };
 
 } // namespace cancel

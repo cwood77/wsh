@@ -1,5 +1,6 @@
-#include "cancel.hpp"
+#include "../cmn/win32.hpp"
 #include "../tcatlib/api.hpp"
+#include "cancel.hpp"
 
 namespace cancel {
 
@@ -7,15 +8,16 @@ class keyMonitor : public iKeyMonitor {
 public:
    keyMonitor();
    ~keyMonitor();
-   virtual void install(bool add);
-   virtual void recordThreadIo(HANDLE h, bool add);
 
-   virtual bool wasAborted() const { return m_wasAborted; }
+   virtual void install(bool add);
+
+   virtual void waitForCancelUntil(HANDLE h, std::function<void(void)> f);
+   virtual void clearAborted() { m_evt.clear(); }
 
 private:
-   void onCancel();
+   void onCancel() { m_evt.set(); }
 
-   bool m_wasAborted;
+   cmn::osEvent m_evt;
 
    static BOOL WINAPI onHandleThunk(DWORD ctrl);
    static int gRefCnt;
@@ -26,6 +28,7 @@ int keyMonitor::gRefCnt = 0;
 keyMonitor *keyMonitor::gHandler = NULL;
 
 keyMonitor::keyMonitor()
+: m_evt("",/*auto*/false)
 {
    if(gRefCnt != 0 || gHandler != NULL)
       throw std::runtime_error("ISE");
@@ -55,13 +58,12 @@ void keyMonitor::install(bool add)
    }
 }
 
-void keyMonitor::recordThreadIo(HANDLE h, bool add)
+void keyMonitor::waitForCancelUntil(HANDLE h, std::function<void(void)> f)
 {
-}
-
-void keyMonitor::onCancel()
-{
-   m_wasAborted = true;
+   HANDLE hans[2] = { h, m_evt.getHandle() };
+   auto rVal = ::WaitForMultipleObjects(2,hans,/*all?*/FALSE,INFINITE);
+   if(rVal == WAIT_OBJECT_0 + 1)
+      f();
 }
 
 BOOL WINAPI keyMonitor::onHandleThunk(DWORD ctrl)

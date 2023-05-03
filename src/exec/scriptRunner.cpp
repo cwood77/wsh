@@ -1,5 +1,4 @@
 #include "../cmn/autoPtr.hpp"
-#include "../exec/cancel.hpp"
 #include "../tcatlib/api.hpp"
 #include "scriptRunner.hpp"
 #include <stdexcept>
@@ -28,19 +27,13 @@ outPipe::~outPipe()
 
 void outPipe::processLoop(std::function<void(const std::string&)> f, size_t bufferSize)
 {
-   tcat::typePtr<cancel::iKeyMonitor> cancel;
-
    cmn::sizedAlloc block;
    block.realloc(bufferSize);
 
    for(;;)
    {
       DWORD dwRead = 0;
-      BOOL bSuccess;
-      {
-         cancel::autoInstallSyncIo _io(*cancel,::GetCurrentThread());
-         bSuccess = ::ReadFile(m_parentEnd,block.ptr(),block.size(),&dwRead,NULL);
-      }
+      BOOL bSuccess = ::ReadFile(m_parentEnd,block.ptr(),block.size(),&dwRead,NULL);
       if(!bSuccess || dwRead == 0) break;
 
       std::string s(block.ptr());
@@ -50,7 +43,34 @@ void outPipe::processLoop(std::function<void(const std::string&)> f, size_t buff
 
 tcatExposeTypeAs(outPipe,iOutPipe);
 
-void processRunner::execute(HANDLE hJob, const char *command, iOutPipe *pStdOut, iOutPipe *pStdErr, std::function<void(DWORD)> onCreate)
+job::job()
+{
+   m_h.h = ::CreateJobObjectA(
+      NULL, // [in, optional] LPSECURITY_ATTRIBUTES lpJobAttributes,
+      NULL  // [in, optional] LPCSTR                lpName
+   );
+   if(!m_h.h)
+      throw std::runtime_error("failed to create job");
+}
+
+void job::terminate()
+{
+   ::TerminateJobObject(m_h.h,-2);
+}
+
+void job::attachProcess(HANDLE h)
+{
+   auto success = ::AssignProcessToJobObject(
+      m_h.h, // [in] HANDLE hJob,
+      h      // [in] HANDLE hProcess
+   );
+   if(!success)
+      throw std::runtime_error("failed to bind process to job");
+}
+
+tcatExposeTypeAs(job,iJob);
+
+void processRunner::execute(iJob *pJob, const char *command, iOutPipe *pStdOut, iOutPipe *pStdErr, std::function<void(DWORD)> onCreate)
 {
    STARTUPINFOA si;
    ::memset(&si,0,sizeof(STARTUPINFOA));
@@ -81,6 +101,8 @@ void processRunner::execute(HANDLE hJob, const char *command, iOutPipe *pStdOut,
    if(!success)
       throw std::runtime_error("failed to create process");
 
+   if(pJob)
+      dynamic_cast<job&>(*pJob).attachProcess(pi.hProcess);
    onCreate(pi.dwProcessId);
    ::ResumeThread(pi.hThread);
 

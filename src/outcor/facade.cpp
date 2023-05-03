@@ -2,7 +2,9 @@
 #include "../cmn/service.hpp"
 #include "../cmn/win32.hpp"
 #include "../cmn/wshsubproc.hpp"
+#include "../cui/api.hpp"
 #include "../exec/api.hpp"
+#include "../exec/cancel.hpp"
 #include "../tcatlib/api.hpp"
 #include "api.hpp"
 #include <memory>
@@ -37,14 +39,16 @@ public:
    , m_outTc(m_outTh)
    , m_errTc(m_errTh)
    , m_masterShmem(m_pSvcMan->demand<cmn::wshMasterBlock>())
+   , m_cancel(m_pSvcMan->demand<cancel::iKeyMonitor>())
    {}
 
    void beginExecute(const std::string& command)
    {
+      m_cancelMon.reset(new cancel::autoInstallMonitor(m_cancel));
       m_outTc.start();
       m_errTc.start();
       tcat::typePtr<exec::iProcessRunner> pProc;
-      pProc->execute(NULL,command.c_str(),&*m_pStdOut,&*m_pStdErr,[&](DWORD procId)
+      pProc->execute(&*m_pJob,command.c_str(),&*m_pStdOut,&*m_pStdErr,[&](DWORD procId)
       {
          // assign a channel for this process in case it wants to use shmem
          size_t myIdx = 0;
@@ -60,8 +64,25 @@ public:
 
    void join()
    {
+      // handle cancel
+      bool wasCancelled = false;
+      m_cancel.waitForCancelUntil(m_outTc.getHandle(),[&]()
+      {
+         auto& styler = m_pSvcMan->demand<cui::iStyler>();
+         styler.error([](auto& o){ o << std::endl << "user Ctrl-C aborting process" << std::endl; });
+         m_pJob->terminate();
+         wasCancelled = true;
+      });
+      m_cancelMon.reset(NULL);
       m_outTc.join();
       m_errTc.join();
+
+      if(wasCancelled)
+      {
+         auto& styler = m_pSvcMan->demand<cui::iStyler>();
+         styler.error([](auto& o){ o << std::endl << "killed" << std::endl; });
+         return;
+      }
 
       // examine shmem for tail processing
       size_t myIdx = (*m_pShmem)->channel;
@@ -77,6 +98,7 @@ private:
    tcat::typePtr<cmn::serviceManager> m_pSvcMan;
    tcat::typePtr<exec::iOutPipe> m_pStdOut;
    tcat::typePtr<exec::iOutPipe> m_pStdErr;
+   tcat::typePtr<exec::iJob> m_pJob;
 
    pipeThread m_outTh;
    pipeThread m_errTh;
@@ -86,6 +108,9 @@ private:
 
    cmn::wshMasterBlock& m_masterShmem;
    std::unique_ptr<cmn::shmem<cmn::wshSubprocBlock> > m_pShmem;
+
+   cancel::iKeyMonitor& m_cancel;
+   std::unique_ptr<cancel::autoInstallMonitor> m_cancelMon;
 };
 
 class subprocessFacade : public iSubprocessFacade {

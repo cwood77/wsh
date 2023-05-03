@@ -1,6 +1,7 @@
 #ifndef ___exec_scriptRunner___
 #define ___exec_scriptRunner___
 
+#include "../cmn/win32.hpp"
 #include "api.hpp"
 
 namespace exec {
@@ -23,9 +24,19 @@ private:
    HANDLE m_childEnd;
 };
 
+class job : public iJob {
+public:
+   job();
+   virtual void terminate();
+   void attachProcess(HANDLE h);
+
+private:
+   cmn::autoHandle m_h;
+};
+
 class processRunner : public iProcessRunner {
 public:
-   virtual void execute(HANDLE hJob, const char *command, iOutPipe *pStdOut = NULL, iOutPipe *pStdErr = NULL, std::function<void(DWORD)> onCreate = std::function<void(DWORD)>());
+   virtual void execute(iJob *pJob, const char *command, iOutPipe *pStdOut = NULL, iOutPipe *pStdErr = NULL, std::function<void(DWORD)> onCreate = std::function<void(DWORD)>());
 };
 
 } // namespace exec

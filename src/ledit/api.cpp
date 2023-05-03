@@ -2,7 +2,6 @@
 #include "../cmn/autoPtr.hpp"
 #include "../cmn/service.hpp"
 #include "../cui/pen.hpp"
-#include "../exec/cancel.hpp"
 #include "../tcatlib/api.hpp"
 #include "api.hpp"
 #include "printer.hpp"
@@ -17,7 +16,6 @@ public:
 
 std::string cmdLineEditor::run()
 {
-   tcat::typePtr<cancel::iKeyMonitor> cancel;
    tcat::typePtr<cmn::serviceManager> svcMan;
    tcat::typeSet<iCmdLineKeyHandler> handlers;
    auto& in = svcMan->demand<cui::iUserInput>();
@@ -32,13 +30,7 @@ std::string cmdLineEditor::run()
       {
          printer(out,styler).print(state);
 
-         char c = 0;
-         {
-            cancel::autoInstallKeyMonitor _k(*cancel);
-            c = in.getKey();
-            if(cancel->wasAborted())
-               styler.normal([](auto& o){ o << "was cancelled!" << std::endl; });
-         }
+         char c = in.getKey();
 
          bool handled = false;
          for(size_t i=0;!handled&&i<handlers.size();i++)

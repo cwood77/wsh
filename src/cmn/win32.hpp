@@ -33,6 +33,11 @@ public:
       return r == WAIT_OBJECT_0;
    }
 
+   void clear()
+   {
+      ::ResetEvent(m_hEvent);
+   }
+
    void waitAndThrowIfTimeout(DWORD timeout, const std::string& msg = "timeout waiting for signal")
    {
       DWORD r = ::WaitForSingleObject(m_hEvent,timeout);
@@ -101,6 +106,8 @@ public:
    {
       ::WaitForSingleObject(m_hThread,INFINITE);
    }
+
+   HANDLE getHandle() const { return m_hThread; }
 
 private:
    static DWORD WINAPI thunk(LPVOID param)
