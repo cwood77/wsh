@@ -36,7 +36,7 @@ void outPipe::processLoop(std::function<void(const std::string&)> f, size_t buff
       BOOL bSuccess = ::ReadFile(m_parentEnd,block.ptr(),block.size(),&dwRead,NULL);
       if(!bSuccess || dwRead == 0) break;
 
-      std::string s(block.ptr());
+      std::string s(block.ptr(),dwRead);
       f(s);
    }
 }
