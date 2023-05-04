@@ -10,6 +10,7 @@
 #include "../exec/cancel.hpp"
 #include "../file/api.hpp"
 #include "../file/manager.hpp"
+#include "../ledit/api.hpp"
 #include "../outcor/api.hpp"
 #include "../resolve/api.hpp"
 #include "../tcatlib/api.hpp"
@@ -23,6 +24,9 @@ public:
    std::string oCannedInputFile;
 
    virtual void run(console::iLog& l);
+
+private:
+   void setupDefaults(resolve::iProgramResolver& r);
 };
 
 class myVerb : public console::globalVerb {
@@ -72,10 +76,7 @@ void intCommand::run(console::iLog& l)
    tcat::typePtr<outcor::iOutCorrelator> _out;
    cmn::autoService<outcor::iOutCorrelator> _outSvc(*svcMan,*_out);
    tcat::typePtr<resolve::iProgramResolver> _res;
-   _res->addBuiltIn("q");
-   _res->adoptFromCmdExe("dir");
-   _res->adoptFromCmdExe("tasklist");
-   _res->adoptFromCmdExe("tree");
+   setupDefaults(*_res);
    cmn::autoService<resolve::iProgramResolver> _resSvc(*svcMan,*_res);
    cmn::autoService<cmn::wshMasterBlock> _shmemMasterSvc(*svcMan,*shmemMaster);
    tcat::typePtr<cancel::iKeyMonitor> _cancel;
@@ -145,6 +146,34 @@ void intCommand::run(console::iLog& l)
 
    // return to normalcy
    _pen.str() << pen::fgcol(pen::kDefault) << pen::bgcol(pen::kDefault);// << pen::showCursor();
+}
+
+void intCommand::setupDefaults(resolve::iProgramResolver& r)
+{
+   r.addBuiltIn("q");
+   r.adoptFromCmdExe("dir");
+   r.adoptFromCmdExe("tasklist");
+   r.adoptFromCmdExe("tree");
+
+   tcat::typePtr<ledit::iCmdHelp> pHlp;
+
+   pHlp->addStartsWithHelp("cmd",      "[/CK] <expr>");
+   pHlp->addExactHelp(     "cmd /",    "<C termintate> <K remain>");
+
+   pHlp->addStartsWithHelp("dir",      "[/AS] <path>");
+   pHlp->addExactHelp(     "dir /",    "<A:-HS attribute> <S recurse>");
+
+   pHlp->addStartsWithHelp("find",     "<path> -iname <expr>");
+
+   pHlp->addStartsWithHelp("grep",     "[-rniI] <expr> <path>");
+   pHlp->addExactHelp(     "grep -",   "<r recursive> <n line numbers> <i case insens> <I skip binaries>");
+
+   pHlp->addStartsWithHelp("ls",       "[-laRX] <path>");
+   pHlp->addExactHelp(     "ls -",     "<l list fmt> <a all files> <R recursive> <X sort by ext>");
+
+   pHlp->addStartsWithHelp("tasklist", "[/FI \"imagename eq <expr>\"]");
+
+   pHlp->addStartsWithHelp("tree",     "<path> [/F]");
 }
 
 } // anonymous namespace

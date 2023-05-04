@@ -81,6 +81,10 @@ public:
 class iCmdHelp {
 public:
    virtual ~iCmdHelp() {}
+
+   virtual void addStartsWithHelp(const std::string& match, const std::string& help) = 0;
+   virtual void addExactHelp(const std::string& match, const std::string& help) = 0;
+
    virtual std::string getHelp(cmdLineState& s) = 0;
 };
 

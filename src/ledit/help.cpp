@@ -1,28 +1,47 @@
 #include "../tcatlib/api.hpp"
 #include "api.hpp"
 #include <cstring>
+#include <map>
 
 namespace ledit {
 
 class cmdHelp : public iCmdHelp {
 public:
+   virtual void addStartsWithHelp(const std::string& match, const std::string& help)
+   {
+      m_startsWith[match] = help;
+   }
+
+   virtual void addExactHelp(const std::string& match, const std::string& help)
+   {
+      m_exact[match] = help;
+   }
+
    virtual std::string getHelp(cmdLineState& s)
    {
       if(s.readyToSend)
          return "";
 
-      if(::strncmp(s.userText.c_str(),"tree",4)==0)
-         return "<path> [/F]";
+      auto it = m_exact.find(s.userText);
+      if(it != m_exact.end())
+         return it->second;
 
-      else if(s.userText == "cmd /")
-         return "[C termintate] [K remain]";
-      else if(::strncmp(s.userText.c_str(),"cmd",3)==0)
-         return "[/CK] <expr>";
+      const char *pThumb = s.userText.c_str();
+      for(;*pThumb&&*pThumb!=' ';++pThumb);
+      std::string firstPart(s.userText.c_str(),pThumb-s.userText.c_str());
+
+      it = m_startsWith.find(firstPart);
+      if(it != m_startsWith.end())
+         return it->second;
 
       return "";
    }
+
+private:
+   std::map<std::string,std::string> m_startsWith;
+   std::map<std::string,std::string> m_exact;
 };
 
-tcatExposeTypeAs(cmdHelp,iCmdHelp);
+tcatExposeSingletonTypeAs(cmdHelp,iCmdHelp);
 
 } // namespace ledit

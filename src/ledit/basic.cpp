@@ -77,7 +77,7 @@ public:
       s.userText = (left + std::string(1,c.base) + right);
       s.iCursor++;
 
-      s.resolved = m_resolver.tryResolve(s.userText);
+      s.resolved = m_resolver.tryResolve(s.userText); // TODO this needs to be more often!
 
       return true;
    }

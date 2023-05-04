@@ -26,30 +26,25 @@ window control
 
 what would help look like?
 potential candidates:
- grep
- ls
- tar
- find
- tasklist
- dir
- cmd
-
-W find
-<path> -iname <expr>
-
-W tree
-<path> [/F]
-
-W cmd
-[/CK] <expr>
-W cmd /
-[C terminate] [K remain]
+ x cmd
+ x dir
+ x find
+ x grep
+ x ls
+   tar
+ x tasklist
 
 "built-in" commands I need
-cd
-set?
-cls
 ver
+setHelp
+setAlias
+
+cd
 pushd
 popd
+
 doskey
+set?
+
+[ ] am I dependent on bash for other builtins?
+echo
