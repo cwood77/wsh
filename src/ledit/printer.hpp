@@ -14,6 +14,7 @@ public:
 
    void initialize(cmdLineState& s);
    void print(cmdLineState& s);
+   void updateHelp(cmdLineState& s, const std::string& newHelp);
 
 private:
    pen::object& m_pen;

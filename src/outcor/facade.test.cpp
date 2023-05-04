@@ -123,7 +123,7 @@ testDefineTest(outcor_shmemRoundtripTailCmdWorks)
 {
    testSubprocessFacade([&](auto& out, auto& sub)
    {
-      sub.beginExecute(out,"q");
+      sub.beginExecute(out,"bin\\out\\debug\\q.exe");
       try
       {
          sub.join();

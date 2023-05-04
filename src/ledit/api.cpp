@@ -18,6 +18,7 @@ std::string cmdLineEditor::run()
 {
    tcat::typePtr<cmn::serviceManager> svcMan;
    tcat::typeSet<iCmdLineKeyHandler> handlers;
+   tcat::typePtr<iCmdHelp> helper;
    auto& in = svcMan->demand<cui::iUserInput>();
    auto& out = svcMan->demand<pen::object>();
    auto& styler = svcMan->demand<cui::iStyler>();
@@ -43,6 +44,9 @@ std::string cmdLineEditor::run()
             handled = handlers[i]->tryHandle(c,state);
          for(size_t i=0;!handled&&i<handlers.size();i++)
             handled = handlers[i]->tryHandleLast(c,state);
+
+         auto newHelp = helper->getHelp(state);
+         printer(out,styler).updateHelp(state,newHelp);
 
          if(!handled)
          {

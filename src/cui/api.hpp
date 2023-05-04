@@ -40,7 +40,8 @@ public:
       kNormal,
       kHint,
       kHelp,
-      kError
+      kError,
+      kPwd
    };
 
    virtual ~iStylePrefs() {}
@@ -64,6 +65,8 @@ public:
    { return with(iStylePrefs::kHelp,f); }
    iStyler& error(std::function<void(std::ostream&)> f)
    { return with(iStylePrefs::kError,f); }
+   iStyler& pwd(std::function<void(std::ostream&)> f)
+   { return with(iStylePrefs::kPwd,f); }
 };
 
 // --------------- handling

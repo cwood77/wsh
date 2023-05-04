@@ -19,3 +19,37 @@ animations
 
 === red
 window control
+
+
+
+
+
+what would help look like?
+potential candidates:
+ grep
+ ls
+ tar
+ find
+ tasklist
+ dir
+ cmd
+
+W find
+<path> -iname <expr>
+
+W tree
+<path> [/F]
+
+W cmd
+[/CK] <expr>
+W cmd /
+[C terminate] [K remain]
+
+"built-in" commands I need
+cd
+set?
+cls
+ver
+pushd
+popd
+doskey

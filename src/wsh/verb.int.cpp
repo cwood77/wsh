@@ -72,6 +72,10 @@ void intCommand::run(console::iLog& l)
    tcat::typePtr<outcor::iOutCorrelator> _out;
    cmn::autoService<outcor::iOutCorrelator> _outSvc(*svcMan,*_out);
    tcat::typePtr<resolve::iProgramResolver> _res;
+   _res->addBuiltIn("q");
+   _res->adoptFromCmdExe("dir");
+   _res->adoptFromCmdExe("tasklist");
+   _res->adoptFromCmdExe("tree");
    cmn::autoService<resolve::iProgramResolver> _resSvc(*svcMan,*_res);
    cmn::autoService<cmn::wshMasterBlock> _shmemMasterSvc(*svcMan,*shmemMaster);
    tcat::typePtr<cancel::iKeyMonitor> _cancel;

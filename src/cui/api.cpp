@@ -70,6 +70,9 @@ public:
          case kError:
             o << pen::fgcol(pen::kRed,true);
             break;
+         case kPwd:
+            o << pen::fgcol(pen::kGreen);
+            break;
       }
    }
 };

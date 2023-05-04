@@ -297,6 +297,7 @@ $(CUI_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 LEDIT_SRC = \
 	src/ledit/api.cpp \
 	src/ledit/basic.cpp \
+	src/ledit/help.cpp \
 	src/ledit/printer.cpp \
 
 LEDIT_TEST_SRC = \
