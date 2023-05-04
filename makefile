@@ -16,6 +16,7 @@ all: \
 	$(OUT_DIR)/debug/file.dll \
 	$(OUT_DIR)/debug/file.test.dll \
 	$(OUT_DIR)/debug/ledit.dll \
+	$(OUT_DIR)/debug/ledit.test.dll \
 	$(OUT_DIR)/debug/outcor.dll \
 	$(OUT_DIR)/debug/outcor.test.dll \
 	$(OUT_DIR)/debug/resolve.dll \
@@ -30,6 +31,7 @@ all: \
 	$(OUT_DIR)/release/file.dll \
 	$(OUT_DIR)/release/file.test.dll \
 	$(OUT_DIR)/release/ledit.dll \
+	$(OUT_DIR)/release/ledit.test.dll \
 	$(OUT_DIR)/release/outcor.dll \
 	$(OUT_DIR)/release/outcor.test.dll \
 	$(OUT_DIR)/release/resolve.dll \
@@ -297,6 +299,9 @@ LEDIT_SRC = \
 	src/ledit/basic.cpp \
 	src/ledit/printer.cpp \
 
+LEDIT_TEST_SRC = \
+	src/ledit/api.test.cpp \
+
 LEDIT_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(LEDIT_SRC)))
 
 $(OUT_DIR)/debug/ledit.dll: $(LEDIT_DEBUG_OBJ) $(OUT_DIR)/debug/tcatlib.lib $(OUT_DIR)/debug/pen.lib
@@ -319,6 +324,30 @@ $(OUT_DIR)/release/ledit.dll: $(LEDIT_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.li
 $(LEDIT_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@mkdir -p $(OBJ_DIR)/release/ledit
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+LEDIT_TEST_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(LEDIT_TEST_SRC)))
+
+$(OUT_DIR)/debug/ledit.test.dll: $(LEDIT_TEST_DEBUG_OBJ) $(OUT_DIR)/debug/tcatlib.lib
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/debug
+	@$(LINK_CMD) -shared -o $@ $(LEDIT_TEST_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -ltcatlib
+
+$(LEDIT_TEST_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/debug/ledit.test
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+LEDIT_TEST_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(LEDIT_TEST_SRC)))
+
+$(OUT_DIR)/release/ledit.test.dll: $(LEDIT_TEST_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.lib
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/release
+	@$(LINK_CMD) -shared -o $@ $(LEDIT_TEST_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -ltcatlib
+
+$(LEDIT_TEST_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/release/ledit.test
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
 
 # ----------------------------------------------------------------------
@@ -510,6 +539,7 @@ WSH_SRC = \
 	src/wsh/main.cpp \
 	src/wsh/runLoop.cpp \
 	src/wsh/verb.int.cpp \
+	src/wsh/verb.keyTest.cpp \
 
 WSH_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(WSH_SRC)))
 

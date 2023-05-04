@@ -30,7 +30,13 @@ std::string cmdLineEditor::run()
       {
          printer(out,styler).print(state);
 
-         char c = in.getKey();
+         extKey c;
+         c.base = in.getKey();
+         if(c.base == -32)
+         {
+            c.mod = c.base;
+            c.base = in.getKey();
+         }
 
          bool handled = false;
          for(size_t i=0;!handled&&i<handlers.size();i++)

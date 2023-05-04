@@ -30,18 +30,25 @@ class cmdLineState {
 public:
    cmdLineState()
    : loc(0,0), pCompletionState(NULL), iCursor(0), iHintStart(0), pGuessState(NULL)
-   , readyToSend(false), lastNonPromptLength(0) {}
+   , readyToSend(false), lastNonPromptLength(0), iProcEnd(-1) {}
 
    cui::pnt loc;
    std::string prompt;
    std::string userText;
+private: // unused
    iCompletionState *pCompletionState;
+public: // used
    int iCursor;
+private: // unused
    int iHintStart;
    iGuessState *pGuessState;
    std::string helpText;
+public: // used
    bool readyToSend;
    size_t lastNonPromptLength;
+private: // unused
+   int iProcEnd; // divisor between process and arguments
+public: // used
 
    std::string resolved;
 };
@@ -52,11 +59,22 @@ public:
    virtual std::string run() = 0;
 };
 
+class extKey {
+public:
+   extKey() : mod(0), base(0) {}
+
+   bool is(char c) const { return mod == 0 && base == c; }
+   bool modIs(char c) const { return mod == -32 && base == c; }
+
+   char mod;
+   char base;
+};
+
 class iCmdLineKeyHandler {
 public:
    virtual ~iCmdLineKeyHandler() {}
-   virtual bool tryHandle(char c, cmdLineState& s) = 0;
-   virtual bool tryHandleLast(char c, cmdLineState& s) = 0;
+   virtual bool tryHandle(extKey c, cmdLineState& s) = 0;
+   virtual bool tryHandleLast(extKey c, cmdLineState& s) = 0;
 };
 
 } // namespace ledit

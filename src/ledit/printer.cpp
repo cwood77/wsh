@@ -27,6 +27,8 @@ void printer::print(cmdLineState& s)
    cui::pnt xy = s.loc;
    xy.x += s.prompt.length();
 
+   // don't both redrawing the prompt since it's immutable
+
    // usertext portion
    m_pen.str() << pen::moveTo(xy);
    m_style.normal([&](auto& o){ o << s.userText; });
@@ -39,6 +41,13 @@ void printer::print(cmdLineState& s)
       m_style.normal([&](auto& o){ o << std::string(s.lastNonPromptLength-totalSize,' '); });
       m_pen.str() << pen::moveTo(xy);
    }
+   s.lastNonPromptLength = totalSize;
+
+   // position the cursor where the user left it
+   xy = s.loc;
+   xy.x += s.prompt.length();
+   xy.x += s.iCursor;
+   m_pen.str() << pen::moveTo(xy);
 }
 
 } // namespace ledit

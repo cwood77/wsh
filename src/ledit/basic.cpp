@@ -11,32 +11,74 @@ public:
    : m_resolver(m_svcMan->demand<resolve::iProgramResolver>())
    {}
 
-   virtual bool tryHandle(char c, cmdLineState& s)
+   virtual bool tryHandle(extKey c, cmdLineState& s)
    {
-      // eventually, handle
-      // - escape
-      // - enter
-      // - left,right
-      // - home,end
-      // - backspace
-
-      if(c == 27)
+      if(c.is(27)) // escape
       {
-         throw std::runtime_error("temporary quit via exception on escape");
+         s.userText = "";
+         s.iCursor = 0;
+         return true;
       }
-      else if(c == 13)
+
+      else if(c.modIs(75)) // left arrow
+      {
+         if(s.iCursor)
+            s.iCursor--;
+         return true;
+      }
+      else if(c.modIs(77)) // right arrow
+      {
+         if(((size_t)s.iCursor) < s.userText.length())
+            s.iCursor++;
+         return true;
+      }
+
+      else if(c.modIs(71)) // home
+      {
+         s.iCursor = 0;
+         return true;
+      }
+      else if(c.modIs(79)) // end
+      {
+         s.iCursor = s.userText.length();
+         return true;
+      }
+
+      else if(c.is(8)) // backspace
+      {
+         if(s.iCursor)
+         {
+            std::string left(s.userText.c_str(),(s.iCursor-1));
+            std::string right(s.userText.c_str()+s.iCursor);
+            s.userText = (left + right);
+            s.iCursor--;
+         }
+         return true;
+      }
+
+      if(c.is(13)) // enter
       {
          s.readyToSend = true;
          return true;
       }
+
       return false;
    }
 
-   virtual bool tryHandleLast(char c, cmdLineState& s)
+   virtual bool tryHandleLast(extKey c, cmdLineState& s)
    {
-      // TODO needs to account for cursor position!
-      s.userText += std::string(1,c);
+      if(c.mod != 0)
+         return false;
+      if(!::isprint(c.base))
+         return false;
+
+      std::string left(s.userText.c_str(),s.iCursor);
+      std::string right(s.userText.c_str()+s.iCursor);
+      s.userText = (left + std::string(1,c.base) + right);
+      s.iCursor++;
+
       s.resolved = m_resolver.tryResolve(s.userText);
+
       return true;
    }
 
