@@ -80,7 +80,7 @@ testDefineTest(ledit_basicHandler_lettersBackspaceEnter)
    tcat::typePtr<ledit::iCmdLineEditor> ledit;
    auto ans = ledit->run();
    //std::cout << "ACTUAL<" << ans << ">" << std::endl;;
-   a.assertTrue(ans == "hello world");
+   a.assertTrue(ans.resolvedCommand == "hello world");
 }
 
 } // anonymous namespace

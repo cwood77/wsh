@@ -34,13 +34,13 @@ void runLoop::runOnce()
    auto cmd = m_editor->run();
 
    m_styler.hint([&](auto& o)
-      { o << std::endl << "[running '" << cmd << "']" << std::endl; });
+      { o << std::endl << "[running '" << cmd.resolvedCommand << "']" << std::endl; });
 
    m_sub->beginExecute(m_out,cmd);
    m_sub->join();
 
    m_styler.hint([&](auto& o)
-      { o << "[done: '" << cmd << "']" << std::endl; });
+      { o << "[done: '" << cmd.resolvedCommand  << "']" << std::endl; });
 }
 
 } // namespace wsh

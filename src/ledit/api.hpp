@@ -15,49 +15,57 @@ public:
    virtual std::string getSuffix() = 0;
 };
 
-class iGuessState {
-public:
-   virtual ~iGuessState() {}
-   virtual void release() = 0;
-
-   virtual std::string advanceWord() = 0;
-   virtual std::string advanceAll() = 0;
-};
-
 class cmdLineState {
 public:
    cmdLineState()
-   : loc(0,0), pCompletionState(NULL), iCursor(0), iHintStart(0), pGuessState(NULL)
-   , readyToSend(false), lastNonPromptLength(0), iProcEnd(-1), lastHelpLength(0) {}
+   : loc(0,0), iCursor(0), lastNonPromptLength(0), histIdx(0)
+   , readyToSend(false), pCompletionState(NULL) {}
 
    cui::pnt loc;
+   std::string pwd;
    std::string prompt;
    std::string userText;
+   int iCursor;
+   size_t lastNonPromptLength;
+   size_t histIdx;
+
+   std::string helpText;
+
+   bool readyToSend;
+   std::string resolved;
+
 private: // unused
    iCompletionState *pCompletionState;
 public: // used
-   int iCursor;
-private: // unused
-   int iHintStart;
-   iGuessState *pGuessState;
-public: // used
-   std::string helpText;
-   bool readyToSend;
-   size_t lastNonPromptLength;
-private: // unused
-   int iProcEnd; // divisor between process and arguments
-public: // used
+};
 
-   std::string resolved;
-   std::string pwd;
+class iCmdLineHistory {
+public:
+   virtual ~iCmdLineHistory() {}
 
-   size_t lastHelpLength;
+   virtual void add(const std::string& line) = 0;
+   virtual std::string get(size_t& idx, bool up) = 0;
+   virtual std::string matchBest(const std::string& start) = 0;
+
+   virtual void load(std::istream& s) = 0;
+   virtual void save(std::ostream& s) = 0;
+};
+
+class cmdLineResult {
+public:
+   cmdLineResult() {}
+
+   cmdLineResult(const std::string& ut, const std::string& resolved)
+   : userText(ut), resolvedCommand(resolved) {}
+
+   std::string userText;
+   std::string resolvedCommand;
 };
 
 class iCmdLineEditor {
 public:
    virtual ~iCmdLineEditor() {}
-   virtual std::string run() = 0;
+   virtual cmdLineResult run() = 0;
 };
 
 class extKey {

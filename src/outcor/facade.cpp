@@ -1,13 +1,16 @@
+#define WIN32_LEAN_AND_MEAN
 #include "../cmn/autoPtr.hpp"
 #include "../cmn/service.hpp"
 #include "../cmn/win32.hpp"
 #include "../cmn/wshsubproc.hpp"
 #include "../cui/api.hpp"
+#include "../ledit/api.hpp"
 #include "../exec/api.hpp"
 #include "../exec/cancel.hpp"
 #include "../tcatlib/api.hpp"
 #include "api.hpp"
 #include <memory>
+#include <windows.h>
 
 namespace outcor {
 
@@ -42,13 +45,14 @@ public:
    , m_cancel(m_pSvcMan->demand<cancel::iKeyMonitor>())
    {}
 
-   void beginExecute(const std::string& command)
+   void beginExecute(const ledit::cmdLineResult& command)
    {
       m_cancelMon.reset(new cancel::autoInstallMonitor(m_cancel));
       m_outTc.start();
       m_errTc.start();
       tcat::typePtr<exec::iProcessRunner> pProc;
-      pProc->execute(&*m_pJob,command.c_str(),&*m_pStdOut,&*m_pStdErr,[&](DWORD procId)
+      m_han.h = pProc->execute(&*m_pJob,command.resolvedCommand.c_str(),&*m_pStdOut,&*m_pStdErr,
+      [&](DWORD procId)
       {
          // assign a channel for this process in case it wants to use shmem
          size_t myIdx = 0;
@@ -60,6 +64,7 @@ public:
             cmn::buildWshMasterShmemName(::GetCurrentProcessId()).c_str());
          (*m_pShmem)->channel = myIdx;
       });
+      m_command = command;
    }
 
    void join()
@@ -84,6 +89,28 @@ public:
          return;
       }
 
+      long exitCode = -2;
+      auto hasExitCode = ::GetExitCodeProcess(m_han.h,(DWORD*)&exitCode);
+      if(!hasExitCode)
+      {
+         auto& styler = m_pSvcMan->demand<cui::iStyler>();
+         styler.error([](auto& o){ o << "process returned no exit code?" << std::endl; });
+         return;
+      }
+      if(exitCode < 0)
+      {
+         auto& styler = m_pSvcMan->demand<cui::iStyler>();
+         styler.error([&](auto& o)
+            { o << "process returned exit code " << exitCode << std::endl; });
+         return;
+      }
+      else
+      {
+         auto& styler = m_pSvcMan->demand<cui::iStyler>();
+         styler.hint([&](auto& o)
+            { o << "process returned exit code " << exitCode << std::endl; });
+      }
+
       // examine shmem for tail processing
       size_t myIdx = (*m_pShmem)->channel;
       auto& channel = m_masterShmem.channels[myIdx];
@@ -92,6 +119,9 @@ public:
          tcat::typePtr<cmn::iWshTailCommand> pCmd(channel.cmd);
          pCmd->execute(channel);
       }
+
+      auto& hist = m_pSvcMan->demand<ledit::iCmdLineHistory>();
+      hist.add(m_command.userText);
    }
 
 private:
@@ -111,11 +141,14 @@ private:
 
    cancel::iKeyMonitor& m_cancel;
    std::unique_ptr<cancel::autoInstallMonitor> m_cancelMon;
+
+   ledit::cmdLineResult m_command;
+   cmn::autoHandle m_han;
 };
 
 class subprocessFacade : public iSubprocessFacade {
 public:
-   virtual void beginExecute(iOutCorrelator& o, const std::string& command)
+   virtual void beginExecute(iOutCorrelator& o, const ledit::cmdLineResult& command)
    {
       m_pImpl.reset(new subprocessFacadeImpl(o));
       m_pImpl->beginExecute(command);

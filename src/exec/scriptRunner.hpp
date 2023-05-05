@@ -36,7 +36,7 @@ private:
 
 class processRunner : public iProcessRunner {
 public:
-   virtual void execute(iJob *pJob, const char *command, iOutPipe *pStdOut = NULL, iOutPipe *pStdErr = NULL, std::function<void(DWORD)> onCreate = std::function<void(DWORD)>());
+   virtual HANDLE execute(iJob *pJob, const char *command, iOutPipe *pStdOut = NULL, iOutPipe *pStdErr = NULL, std::function<void(DWORD)> onCreate = std::function<void(DWORD)>());
 };
 
 } // namespace exec

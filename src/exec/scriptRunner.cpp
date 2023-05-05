@@ -70,7 +70,7 @@ void job::attachProcess(HANDLE h)
 
 tcatExposeTypeAs(job,iJob);
 
-void processRunner::execute(iJob *pJob, const char *command, iOutPipe *pStdOut, iOutPipe *pStdErr, std::function<void(DWORD)> onCreate)
+HANDLE processRunner::execute(iJob *pJob, const char *command, iOutPipe *pStdOut, iOutPipe *pStdErr, std::function<void(DWORD)> onCreate)
 {
    STARTUPINFOA si;
    ::memset(&si,0,sizeof(STARTUPINFOA));
@@ -106,13 +106,15 @@ void processRunner::execute(iJob *pJob, const char *command, iOutPipe *pStdOut, 
    onCreate(pi.dwProcessId);
    ::ResumeThread(pi.hThread);
 
-   ::CloseHandle(pi.hProcess);
+   //::CloseHandle(pi.hProcess);
    ::CloseHandle(pi.hThread);
 
    if(pStdOut)
       pStdOut->closeChildEnd();
    if(pStdErr)
       pStdErr->closeChildEnd();
+
+   return pi.hProcess;
 }
 
 tcatExposeTypeAs(processRunner,iProcessRunner);

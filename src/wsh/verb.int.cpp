@@ -15,6 +15,7 @@
 #include "../resolve/api.hpp"
 #include "../tcatlib/api.hpp"
 #include "runLoop.hpp"
+#include <fstream>
 #include <memory>
 
 namespace {
@@ -81,6 +82,13 @@ void intCommand::run(console::iLog& l)
    cmn::autoService<cmn::wshMasterBlock> _shmemMasterSvc(*svcMan,*shmemMaster);
    tcat::typePtr<cancel::iKeyMonitor> _cancel;
    cmn::autoService<cancel::iKeyMonitor> _cancelSvc(*svcMan,*_cancel);
+   tcat::typePtr<ledit::iCmdLineHistory> _history;
+   {
+      std::string path = fMan->calculatePath(file::iFileManager::kExeAdjacent,"hist.txt");
+      std::ifstream in(path.c_str());
+      _history->load(in);
+   }
+   cmn::autoService<ledit::iCmdLineHistory> _historySvc(*svcMan,*_history);
 
    l.writeLnDebug("loading canned input");
    if(!oCannedInputFile.empty())
@@ -143,6 +151,12 @@ void intCommand::run(console::iLog& l)
    //
 
    wsh::runLoop().start();
+
+   {
+      std::string path = fMan->calculatePath(file::iFileManager::kExeAdjacent,"hist.txt");
+      std::ofstream out(path.c_str());
+      _history->save(out);
+   }
 
    // return to normalcy
    _pen.str() << pen::fgcol(pen::kDefault) << pen::bgcol(pen::kDefault);// << pen::showCursor();

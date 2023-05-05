@@ -29,7 +29,7 @@ class iProcessRunner {
 public:
    virtual ~iProcessRunner() {}
 
-   virtual void execute(iJob *pJob, const char *command,
+   virtual HANDLE execute(iJob *pJob, const char *command,
       iOutPipe *pStdOut = NULL,
       iOutPipe *pStdErr = NULL,
       std::function<void(DWORD)> onCreate = std::function<void(DWORD)>()) = 0;

@@ -11,10 +11,10 @@ namespace ledit {
    
 class cmdLineEditor : public iCmdLineEditor {
 public:
-   virtual std::string run();
+   virtual cmdLineResult run();
 };
 
-std::string cmdLineEditor::run()
+cmdLineResult cmdLineEditor::run()
 {
    tcat::typePtr<cmn::serviceManager> svcMan;
    tcat::typeSet<iCmdLineKeyHandler> handlers;
@@ -56,8 +56,11 @@ std::string cmdLineEditor::run()
          }
          else if(state.readyToSend)
          {
-            // send it
-            return state.resolved.empty() ? state.userText : state.resolved;
+            cmdLineResult result;
+            result.userText = state.userText;
+            result.resolvedCommand =
+               state.resolved.empty() ? state.userText : state.resolved;
+            return result;
          }
       }
 

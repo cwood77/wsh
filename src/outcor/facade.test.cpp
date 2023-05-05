@@ -123,7 +123,7 @@ testDefineTest(outcor_shmemRoundtripTailCmdWorks)
 {
    testSubprocessFacade([&](auto& out, auto& sub)
    {
-      sub.beginExecute(out,"bin\\out\\debug\\q.exe");
+      sub.beginExecute(out,ledit::cmdLineResult("q","bin\\out\\debug\\q.exe"));
       try
       {
          sub.join();
@@ -146,7 +146,9 @@ testDefineTest(outcor_cancelKillsJob)
 
       // start the child process and wait for it to hang
       sub.beginExecute(
-         out,"bin\\out\\debug\\childTest.exe --recurse 30 --set cdw_outcor_cancelJobKill_evt --hang");
+         out,ledit::cmdLineResult(
+            "<test>",
+            "bin\\out\\debug\\childTest.exe --recurse 30 --set cdw_outcor_cancelJobKill_evt --hang"));
       evt.waitAndThrowIfTimeout(3*1000);
 
       // make sure the child is running as expected

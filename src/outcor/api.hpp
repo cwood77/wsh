@@ -1,6 +1,7 @@
 #ifndef ___outcor_api___
 #define ___outcor_api___
 
+#include "../ledit/api.hpp"
 #include <string>
 
 namespace outcor {
@@ -21,7 +22,7 @@ public:
 class iSubprocessFacade {
 public:
    virtual ~iSubprocessFacade() {}
-   virtual void beginExecute(iOutCorrelator& o, const std::string& command) = 0;
+   virtual void beginExecute(iOutCorrelator& o, const ledit::cmdLineResult& command) = 0;
    virtual void join() = 0;
 };
 
