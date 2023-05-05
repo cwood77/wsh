@@ -9,6 +9,7 @@ class basicCmdLineKeyHandler : public iCmdLineKeyHandler {
 public:
    basicCmdLineKeyHandler()
    : m_resolver(m_svcMan->demand<resolve::iProgramResolver>())
+   , m_history(m_svcMan->demand<ledit::iCmdLineHistory>())
    {}
 
    virtual bool tryHandle(extKey c, cmdLineState& s)
@@ -56,7 +57,20 @@ public:
          return true;
       }
 
-      if(c.is(13)) // enter
+      else if(c.modIs(72)) // up
+      {
+         s.userText = m_history.get(s.histIdx,/*up*/true);
+         s.iCursor = s.userText.length();
+         return true;
+      }
+      else if(c.modIs(80)) // down
+      {
+         s.userText = m_history.get(s.histIdx,/*up*/false);
+         s.iCursor = s.userText.length();
+         return true;
+      }
+
+      else if(c.is(13)) // enter
       {
          s.readyToSend = true;
          return true;
@@ -85,6 +99,7 @@ public:
 private:
    tcat::typePtr<cmn::serviceManager> m_svcMan;
    resolve::iProgramResolver& m_resolver;
+   ledit::iCmdLineHistory& m_history;
 };
 
 tcatExposeTypeAs(basicCmdLineKeyHandler,iCmdLineKeyHandler);

@@ -43,6 +43,8 @@ testDefineTest(ledit_basicHandler_lettersBackspaceEnter)
    cmn::autoService<cui::iStyler> _stylerSvc(*svcMan,*_styler);
    tcat::typePtr<resolve::iProgramResolver> _res;
    cmn::autoService<resolve::iProgramResolver> _resSvc(*svcMan,*_res);
+   tcat::typePtr<ledit::iCmdLineHistory> _history;
+   cmn::autoService<ledit::iCmdLineHistory> _historySvc(*svcMan,*_history);
 
    fakeKeys in;
    in.keys.push_back('c');
