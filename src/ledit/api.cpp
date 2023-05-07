@@ -40,7 +40,7 @@ cmdLineResult cmdLineEditor::run()
          }
          else if(c.base == 9)
          {
-            auto s = ::GetAsyncKeyState(VK_SHIFT) & ~0x1;
+            auto s = in.hasShift();
             c.mod = (s ? 1 : 0);
          }
 

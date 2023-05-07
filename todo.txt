@@ -1,5 +1,4 @@
 parity with bash for db dev
-[.] tab completion (file browsing)
 [ ] pipes, redirection, and &&
 [ ] colorized output
 [ ] use peekpipe to try to fix pipe reading race
@@ -25,6 +24,8 @@ later
 
 deferred but not rejected
 [ ] decide which commands are internal and which are not
+[ ] tab completion is based on userText, so input with multiple paths will be ambiguous?
 
 done
 [x] code review 5/6/23
+[x] tab completion (file browsing)

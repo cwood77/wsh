@@ -23,6 +23,7 @@ public:
    virtual ~iUserInput() {}
    virtual void flush() = 0;
    virtual char getKey() = 0;
+   virtual bool hasShift() = 0;
 };
 
 class iCannedUserInput : public iUserInput {

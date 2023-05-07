@@ -59,7 +59,7 @@ public:
             bool hit = tryFindPath(se.word,se.idx);
             if(hit)
             {
-               adjustIndex(se.idx,up);
+               //adjustIndex(se.idx,up);
                s.userText = se.before + se.word + se.after;
                s.iCursor = se.before.length() + se.word.length();
                map[s.userText] = se;
@@ -69,10 +69,10 @@ public:
          {
             stateEntry& se = it->second;
             se.word = se.origWord;
+            adjustIndex(se.idx,up);
             bool hit = tryFindPath(se.word,se.idx);
             if(hit)
             {
-               adjustIndex(se.idx,up);
                s.userText = se.before + se.word + se.after;
                s.iCursor = se.before.length() + se.word.length();
                map[s.userText] = se;
@@ -110,7 +110,7 @@ private:
          s.userText.length()-before.length()-after.length());
    }
 
-   bool tryFindPath(std::string& word, size_t idx)
+   bool tryFindPath(std::string& word, size_t& idx)
    {
       WIN32_FIND_DATA fData;
       cmn::autoFindHandle hFind;
@@ -142,6 +142,7 @@ private:
       if(!lastAnswer.empty())
       {
          rebuildWord(word,fData.cFileName);
+         idx = (i-1);
          return true;
       }
       else

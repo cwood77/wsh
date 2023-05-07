@@ -11,6 +11,7 @@ class userInput : public iUserInput {
 public:
    virtual void flush() { while(::kbhit()) { ::getch(); } }
    virtual char getKey() { return ::getch(); }
+   virtual bool hasShift() { return ::GetAsyncKeyState(VK_SHIFT) & ~0x1; }
 };
 
 tcatExposeTypeAs(userInput,iUserInput);
@@ -31,6 +32,8 @@ public:
       else
          return m_pNext->getKey();
    }
+
+   virtual bool hasShift() { return m_pNext->hasShift(); }
 
    virtual void chain(iUserInput& inner) { m_pNext = &inner; }
 
