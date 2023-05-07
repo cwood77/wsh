@@ -63,18 +63,11 @@ private:
    cui::pnt m_p;
 };
 
-// TODO - this prints to stdout for some reason, so I'm not using it?
 class getPos {
 public:
    explicit getPos(cui::pnt& p) : m_p(p) {}
 
-   void insert(std::ostream& s) const
-   {
-      s << "\x1b[6n";
-      std::string resp;
-      std::cin >> resp;
-      ::sscanf(resp.c_str(),"\x1b[%llu;%lluR",&m_p.y,&m_p.x);
-   }
+   void insert(std::ostream& s) const;
 
 private:
    cui::pnt& m_p;

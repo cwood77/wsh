@@ -18,6 +18,7 @@ public:
       {
          s.userText = "";
          s.iCursor = 0;
+         s.resolved = m_resolver.tryResolve(s.userText);
          return true;
       }
 
@@ -53,6 +54,7 @@ public:
             std::string right(s.userText.c_str()+s.iCursor);
             s.userText = (left + right);
             s.iCursor--;
+            s.resolved = m_resolver.tryResolve(s.userText);
          }
          return true;
       }
@@ -61,12 +63,14 @@ public:
       {
          s.userText = m_history.get(s.histIdx,/*up*/true);
          s.iCursor = s.userText.length();
+         s.resolved = m_resolver.tryResolve(s.userText);
          return true;
       }
       else if(c.modIs(80)) // down
       {
          s.userText = m_history.get(s.histIdx,/*up*/false);
          s.iCursor = s.userText.length();
+         s.resolved = m_resolver.tryResolve(s.userText);
          return true;
       }
 
@@ -90,9 +94,7 @@ public:
       std::string right(s.userText.c_str()+s.iCursor);
       s.userText = (left + std::string(1,c.base) + right);
       s.iCursor++;
-
-      s.resolved = m_resolver.tryResolve(s.userText); // TODO this needs to be more often!
-
+      s.resolved = m_resolver.tryResolve(s.userText);
       return true;
    }
 

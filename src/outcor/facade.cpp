@@ -51,19 +51,20 @@ public:
       m_outTc.start();
       m_errTc.start();
       tcat::typePtr<exec::iProcessRunner> pProc;
-      m_han.h = pProc->execute(&*m_pJob,command.resolvedCommand.c_str(),&*m_pStdOut,&*m_pStdErr,
-      [&](DWORD procId)
-      {
-         // assign a channel for this process in case it wants to use shmem
-         size_t myIdx = 0;
-         m_masterShmem.channels[myIdx].clear();
-         m_pShmem.reset(new cmn::shmem<cmn::wshSubprocBlock>(
-            cmn::buildWshSubprocShmemName(procId)));
-         ::strcpy(
-            (*m_pShmem)->masterName,
-            cmn::buildWshMasterShmemName(::GetCurrentProcessId()).c_str());
-         (*m_pShmem)->channel = myIdx;
-      });
+      m_han.h = pProc->execute(&*m_pJob,command.resolvedCommand.c_str(),
+         &*m_pStdOut,&*m_pStdErr,
+         [&](DWORD procId)
+         {
+            // assign a channel for this process in case it wants to use shmem
+            size_t myIdx = 0;
+            m_masterShmem.channels[myIdx].clear();
+            m_pShmem.reset(new cmn::shmem<cmn::wshSubprocBlock>(
+               cmn::buildWshSubprocShmemName(procId)));
+            ::strcpy(
+               (*m_pShmem)->masterName,
+               cmn::buildWshMasterShmemName(::GetCurrentProcessId()).c_str());
+            (*m_pShmem)->channel = myIdx;
+         });
       m_command = command;
    }
 
@@ -89,6 +90,7 @@ public:
          return;
       }
 
+      // check return code if not cancelled
       long exitCode = -2;
       auto hasExitCode = ::GetExitCodeProcess(m_han.h,(DWORD*)&exitCode);
       if(!hasExitCode)
@@ -111,7 +113,7 @@ public:
             { o << "process returned exit code " << exitCode << std::endl; });
       }
 
-      // examine shmem for tail processing
+      // tail processing if not cancelled and success
       size_t myIdx = (*m_pShmem)->channel;
       auto& channel = m_masterShmem.channels[myIdx];
       if(!channel.isClear())
@@ -120,6 +122,7 @@ public:
          pCmd->execute(channel);
       }
 
+      // record only successful command
       auto& hist = m_pSvcMan->demand<ledit::iCmdLineHistory>();
       hist.add(m_command.userText);
    }
@@ -157,6 +160,7 @@ public:
    virtual void join()
    {
       m_pImpl->join();
+      m_pImpl.reset(NULL);
    }
 
 private:

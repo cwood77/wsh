@@ -112,9 +112,6 @@ void intCommand::run(console::iLog& l)
 
    l.writeLnDebug("switching to cui");
    pen::object::setupStdOut();
-   //_pen.str() << pen::showCursor(false);
-
-   //_pen.str() << pen::fgcol(pen::kYellow) << "\xea:" << pen::fgcol(pen::kDefault) << std::endl;
 
    // listen for chars
    //

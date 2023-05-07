@@ -1,4 +1,5 @@
 #define WIN32_LEAN_AND_MEAN
+#include "../file/manager.hpp"
 #include "../tcatlib/api.hpp"
 #include "api.hpp"
 #include <map>
@@ -10,7 +11,11 @@ class programResolver : public iProgramResolver {
 public:
    virtual void addBuiltIn(const std::string& cmd)
    {
-      m_map[cmd] = std::string("bin\\out\\debug\\") + cmd;
+      tcat::typePtr<file::iFileManager> fMan;
+      std::string realPath = fMan->calculatePath(
+         file::iFileManager::kExeAdjacent,
+         (cmd + ".exe").c_str());
+      m_map[cmd] = realPath;
    }
 
    virtual void adoptFromCmdExe(const std::string& cmd)

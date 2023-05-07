@@ -50,6 +50,26 @@ fgcol::fgcol(colors c, bool bright) : colorBase(c,bright,gFgColors) {}
 
 bgcol::bgcol(colors c, bool bright) : colorBase(c,bright,gBgColors) {}
 
+void getPos::insert(std::ostream& s) const
+{
+   if(0)
+   {
+      // this prints to stdout for some reason, so I'm not using it?
+      s << "\x1b[6n";
+      std::string resp;
+      std::cin >> resp;
+      ::sscanf(resp.c_str(),"\x1b[%llu;%lluR",&m_p.y,&m_p.x);
+   }
+   else
+   {
+      auto h = ::GetStdHandle(STD_OUTPUT_HANDLE);
+      CONSOLE_SCREEN_BUFFER_INFO bInfo;
+      ::GetConsoleScreenBufferInfo(h,&bInfo);
+      m_p.x = bInfo.dwCursorPosition.X + 1;
+      m_p.y = bInfo.dwCursorPosition.Y + 1;
+   }
+}
+
 void block::insert(std::ostream& s) const
 {
    for(size_t i=0;i<n;i++)

@@ -106,7 +106,6 @@ HANDLE processRunner::execute(iJob *pJob, const char *command, iOutPipe *pStdOut
    onCreate(pi.dwProcessId);
    ::ResumeThread(pi.hThread);
 
-   //::CloseHandle(pi.hProcess);
    ::CloseHandle(pi.hThread);
 
    if(pStdOut)

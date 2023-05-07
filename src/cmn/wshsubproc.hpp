@@ -21,7 +21,7 @@
 // (2) is done through shmem
 //
 // subprocess ID -> shmemblock that contains shell procId and channelId
-// shell block is just a set of paths in TMP
+//
 
 namespace cmn {
 

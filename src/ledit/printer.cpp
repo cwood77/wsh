@@ -17,16 +17,9 @@ void printer::initialize(cmdLineState& s)
    m_style.pwd([&](auto& o){ o << s.pwd << std::endl; });
 
    // loc
-   {
-      auto h = ::GetStdHandle(STD_OUTPUT_HANDLE);
-      CONSOLE_SCREEN_BUFFER_INFO bInfo;
-      ::GetConsoleScreenBufferInfo(h,&bInfo);
-      s.loc.x = bInfo.dwCursorPosition.X + 1;
-      s.loc.y = bInfo.dwCursorPosition.Y + 1;
-   }
+   m_style.normal([&](auto& o){ o << pen::getPos(s.loc); });
 
    s.prompt = "\xea ";
-
    m_style.prompt([&](auto& o){ o << s.prompt; });
 }
 

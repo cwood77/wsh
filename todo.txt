@@ -1,0 +1,28 @@
+in work
+
+[ ] keystroke help
+[ ] hint text (history completion)
+[ ] tab completion (file browsing)
+[ ] copy/paste
+[ ] tar help
+[ ] script language
+[ ] macros
+[ ] pipes, redirection, and &&
+[ ] colorized output
+[ ] timestamped output
+[ ] 'explicit' command that means no resolving?
+[ ] use peekpipe to try to fix pipe reading race
+[ ] git help
+
+[ ] ver command
+[ ] dir-like command
+[ ] setAlias command
+[ ] setHelp command
+[ ] cd
+[ ] pushd/popd
+
+deferred but not rejected
+[ ] decide which commands are internal and which are not
+
+done
+[x] code review 5/6/23

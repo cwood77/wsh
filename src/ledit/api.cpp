@@ -48,13 +48,13 @@ cmdLineResult cmdLineEditor::run()
          auto newHelp = helper->getHelp(state);
          printer(out,styler).updateHelp(state,newHelp);
 
-         if(!handled)
+         /*if(!handled)
          {
             out.str() << std::endl;
             styler.error([](auto& o){ o << "no bueno" << std::endl; });
             break;
          }
-         else if(state.readyToSend)
+         else*/ if(state.readyToSend)
          {
             cmdLineResult result;
             result.userText = state.userText;
