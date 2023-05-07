@@ -48,7 +48,10 @@ void keyTestCommand::run(console::iLog& l)
    while(c != 27)
    {
       c = in->getKey();
-      l.writeLnInfo("<%d>",(int)c);
+      auto s = ::GetAsyncKeyState(VK_SHIFT) & ~0x1;
+      auto C = ::GetAsyncKeyState(VK_CONTROL) & ~0x1;
+      auto m = ::GetAsyncKeyState(VK_MENU) & ~0x1;
+      l.writeLnInfo("<%d> %s%s%s",(int)c,s?"s":"",C?"c":"",m?"m":"");
    }
 }
 

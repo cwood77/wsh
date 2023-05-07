@@ -1,25 +1,27 @@
-in work
-
-[ ] keystroke help
-[ ] hint text (history completion)
-[ ] tab completion (file browsing)
-[ ] copy/paste
-[ ] tar help
-[ ] script language
-[ ] macros
+parity with bash for db dev
+[.] tab completion (file browsing)
 [ ] pipes, redirection, and &&
 [ ] colorized output
-[ ] timestamped output
-[ ] 'explicit' command that means no resolving?
 [ ] use peekpipe to try to fix pipe reading race
 [ ] git help
 
-[ ] ver command
-[ ] dir-like command
-[ ] setAlias command
-[ ] setHelp command
-[ ] cd
-[ ] pushd/popd
+nice to have for db dev
+[ ] keystroke help
+[ ] script language
+[ ] command - setAlias command
+[ ] command - setHelp command
+[ ] copy/paste
+
+later
+[ ] hint text (history completion)
+[ ] tar help
+[ ] macros
+[ ] timestamped output
+[ ] 'explicit' command that means no resolving?
+[ ] command - ver command
+[ ] command - dir-like command
+[ ] command - cd
+[ ] command - pushd/popd
 
 deferred but not rejected
 [ ] decide which commands are internal and which are not

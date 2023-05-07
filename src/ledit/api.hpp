@@ -5,21 +5,18 @@
 
 namespace ledit {
 
-class iCompletionState {
+class iFileCompletionState {
 public:
-   virtual ~iCompletionState() {}
-   virtual void release() = 0;
-
-   virtual void next() = 0;
-   virtual void prev() = 0;
-   virtual std::string getSuffix() = 0;
+   virtual ~iFileCompletionState() {}
 };
 
 class cmdLineState {
 public:
    cmdLineState()
    : loc(0,0), iCursor(0), lastNonPromptLength(0), histIdx(0)
-   , readyToSend(false), pCompletionState(NULL) {}
+   , pFileCompletionState(NULL), readyToSend(false) {}
+
+   ~cmdLineState() { delete pFileCompletionState; }
 
    cui::pnt loc;
    std::string pwd;
@@ -29,14 +26,12 @@ public:
    size_t lastNonPromptLength;
    size_t histIdx;
 
+   iFileCompletionState *pFileCompletionState;
+
    std::string helpText;
 
    bool readyToSend;
    std::string resolved;
-
-private: // unused
-   iCompletionState *pCompletionState;
-public: // used
 };
 
 class iCmdLineHistory {
@@ -74,6 +69,7 @@ public:
 
    bool is(char c) const { return mod == 0 && base == c; }
    bool modIs(char c) const { return mod == -32 && base == c; }
+   bool isShift(char c) const { return mod == 1 && base == c; }
 
    char mod;
    char base;

@@ -38,6 +38,11 @@ cmdLineResult cmdLineEditor::run()
             c.mod = c.base;
             c.base = in.getKey();
          }
+         else if(c.base == 9)
+         {
+            auto s = ::GetAsyncKeyState(VK_SHIFT) & ~0x1;
+            c.mod = (s ? 1 : 0);
+         }
 
          bool handled = false;
          for(size_t i=0;!handled&&i<handlers.size();i++)
