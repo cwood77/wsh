@@ -34,6 +34,43 @@ private:
    const bool m_isOut;
 };
 
+#if 0
+class segmentBase {
+public:
+   void beginExecute();
+   void start();
+   long join();
+
+protected:
+   std::string command;
+   tcat::typePtr<exec::iOutPipe> m_pStdErr;
+   pipeThread m_errTh;
+   std::unique_ptr<cmn::shmem<cmn::wshSubprocBlock> > m_pShmem;
+};
+
+class middleSegment : public segmentBase {
+public:
+};
+
+class endSegment : public segmentBase {
+public:
+   tcat::typePtr<exec::iOutPipe> m_pStdOut;
+   pipeThread m_outTh;
+};
+
+class pipeline {
+public:
+   std::vector<segment> segments;
+   tcat::typePtr<exec::iJob> m_pJob;
+};
+
+class pipelineParser {
+public:
+   explicit pipelineParser(pipeline& p);
+   void parse(const std::string& expr);
+};
+#endif
+
 class subprocessFacadeImpl {
 public:
    subprocessFacadeImpl(iOutCorrelator& o)

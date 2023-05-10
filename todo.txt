@@ -1,17 +1,19 @@
 parity with bash for db dev
-[ ] pipes, redirection, and &&
-[ ] colorized output
+[ ] colorized output for git
 [ ] use peekpipe to try to fix pipe reading race
-[ ] git help
+[ ] copy/paste
 
 nice to have for db dev
+[ ] git help
+[ ] colorized output for make
 [ ] keystroke help
 [ ] script language
 [ ] command - setAlias command
 [ ] command - setHelp command
-[ ] copy/paste
 
 later
+[ ] pipes
+[ ] redirection (< and >)
 [ ] hint text (history completion)
 [ ] tar help
 [ ] macros
@@ -29,3 +31,4 @@ deferred but not rejected
 done
 [x] code review 5/6/23
 [x] tab completion (file browsing)
+[x] two commands on a line (&&)

@@ -301,6 +301,7 @@ LEDIT_SRC = \
 	src/ledit/history.cpp \
 	src/ledit/help.cpp \
 	src/ledit/printer.cpp \
+	src/ledit/splitter.cpp \
 
 LEDIT_TEST_SRC = \
 	src/ledit/api.test.cpp \

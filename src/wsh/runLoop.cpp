@@ -31,16 +31,22 @@ void runLoop::start()
 
 void runLoop::runOnce()
 {
-   auto cmd = m_editor->run();
+   auto wholecmd = m_editor->run();
 
-   m_styler.hint([&](auto& o)
-      { o << std::endl << "[running '" << cmd.resolvedCommand << "']" << std::endl; });
+   tcat::typePtr<ledit::iCmdLineResultSplitter> splitter;
+   auto v = splitter->split(wholecmd);
 
-   m_sub->beginExecute(m_out,cmd);
-   m_sub->join();
+   for(auto cmd : v)
+   {
+      m_styler.hint([&](auto& o)
+         { o << std::endl << "[running '" << cmd.resolvedCommand << "']" << std::endl; });
 
-   m_styler.hint([&](auto& o)
-      { o << "[done: '" << cmd.resolvedCommand  << "']" << std::endl; });
+      m_sub->beginExecute(m_out,cmd);
+      m_sub->join();
+
+      m_styler.hint([&](auto& o)
+         { o << "[done: '" << cmd.resolvedCommand  << "']" << std::endl; });
+   }
 }
 
 } // namespace wsh

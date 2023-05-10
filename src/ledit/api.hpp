@@ -57,6 +57,12 @@ public:
    std::string resolvedCommand;
 };
 
+class iCmdLineResultSplitter {
+public:
+   virtual ~iCmdLineResultSplitter() {}
+   virtual std::vector<cmdLineResult> split(cmdLineResult& r) = 0;
+};
+
 class iCmdLineEditor {
 public:
    virtual ~iCmdLineEditor() {}
