@@ -22,6 +22,7 @@ all: \
 	$(OUT_DIR)/debug/resolve.dll \
 	$(OUT_DIR)/debug/tcatbin.dll \
 	$(OUT_DIR)/debug/q.exe \
+	$(OUT_DIR)/debug/fork.exe \
 	$(OUT_DIR)/debug/childTest.exe \
 	$(OUT_DIR)/debug/test.exe \
 	$(OUT_DIR)/debug/wsh.exe \
@@ -37,6 +38,7 @@ all: \
 	$(OUT_DIR)/release/resolve.dll \
 	$(OUT_DIR)/release/tcatbin.dll \
 	$(OUT_DIR)/release/q.exe \
+	$(OUT_DIR)/release/fork.exe \
 	$(OUT_DIR)/release/childTest.exe \
 	$(OUT_DIR)/release/test.exe \
 	$(OUT_DIR)/release/wsh.exe
@@ -474,6 +476,36 @@ $(OUT_DIR)/release/q.exe: $(QUITCMD_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.lib
 $(QUITCMD_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@mkdir -p $(OBJ_DIR)/release/q
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
+# forkcmd
+
+FORKCMD_SRC = \
+	src/fork/main.cpp \
+
+FORKCMD_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(FORKCMD_SRC)))
+
+$(OUT_DIR)/debug/fork.exe: $(FORKCMD_DEBUG_OBJ) $(OUT_DIR)/debug/tcatlib.lib
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/debug
+	@$(LINK_CMD) -o $@ $(FORKCMD_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -ltcatlib
+
+$(FORKCMD_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/debug/fork
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+FORKCMD_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(FORKCMD_SRC)))
+
+$(OUT_DIR)/release/fork.exe: $(FORKCMD_RELEASE_OBJ) $(OUT_DIR)/release/tcatlib.lib
+	$(info $< --> $@)
+	@mkdir -p $(OUT_DIR)/release
+	@$(LINK_CMD) -o $@ $(FORKCMD_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -ltcatlib
+
+$(FORKCMD_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@mkdir -p $(OBJ_DIR)/release/fork
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
 
 # ----------------------------------------------------------------------

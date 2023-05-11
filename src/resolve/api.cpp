@@ -9,6 +9,15 @@ namespace resolve {
 
 class programResolver : public iProgramResolver {
 public:
+   programResolver()
+   {
+      tcat::typePtr<file::iFileManager> fMan;
+      std::string realPath = fMan->calculatePath(
+         file::iFileManager::kExeAdjacent,
+         "fork.exe \"gvim .\"");
+      m_map["gvim"] = realPath;
+   }
+
    virtual void addBuiltIn(const std::string& cmd)
    {
       tcat::typePtr<file::iFileManager> fMan;

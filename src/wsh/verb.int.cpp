@@ -162,6 +162,7 @@ void intCommand::run(console::iLog& l)
 void intCommand::setupDefaults(resolve::iProgramResolver& r)
 {
    r.addBuiltIn("q");
+   r.addBuiltIn("fork");
    r.adoptFromCmdExe("dir");
    r.adoptFromCmdExe("tasklist");
    r.adoptFromCmdExe("tree");
