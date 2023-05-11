@@ -193,8 +193,6 @@ public:
             out << std::string(pThumb++,1);
       }
 
-      this does not compile
-
       out << pen::fgcol(pen::kDefault);
       return out.str();
    }

@@ -23,7 +23,7 @@ class iSubprocessFacade {
 public:
    virtual ~iSubprocessFacade() {}
    virtual void beginExecute(iOutCorrelator& o, const ledit::cmdLineResult& command) = 0;
-   virtual void join() = 0;
+   virtual bool join() = 0;
 };
 
 class iOutputColorer {

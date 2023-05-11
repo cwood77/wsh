@@ -116,7 +116,7 @@ public:
       m_command = command;
    }
 
-   void join()
+   bool join()
    {
       // handle cancel
       bool wasCancelled = false;
@@ -135,7 +135,7 @@ public:
       {
          auto& styler = m_pSvcMan->demand<cui::iStyler>();
          styler.error([](auto& o){ o << std::endl << "killed" << std::endl; });
-         return;
+         return false;
       }
 
       // check return code if not cancelled
@@ -145,14 +145,14 @@ public:
       {
          auto& styler = m_pSvcMan->demand<cui::iStyler>();
          styler.error([](auto& o){ o << "process returned no exit code?" << std::endl; });
-         return;
+         return false;
       }
       if(exitCode < 0)
       {
          auto& styler = m_pSvcMan->demand<cui::iStyler>();
          styler.error([&](auto& o)
             { o << "process returned exit code " << exitCode << std::endl; });
-         return;
+         return false;
       }
       else
       {
@@ -170,9 +170,7 @@ public:
          pCmd->execute(channel);
       }
 
-      // record only successful command
-      auto& hist = m_pSvcMan->demand<ledit::iCmdLineHistory>();
-      hist.add(m_command.userText);
+      return true;
    }
 
 private:
@@ -205,10 +203,11 @@ public:
       m_pImpl->beginExecute(command);
    }
 
-   virtual void join()
+   virtual bool join()
    {
-      m_pImpl->join();
+      auto rval = m_pImpl->join();
       m_pImpl.reset(NULL);
+      return rval;
    }
 
 private:
