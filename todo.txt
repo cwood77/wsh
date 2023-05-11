@@ -1,9 +1,11 @@
 parity with bash for db dev
 [ ] make uses weird single quotes that can't survive wsh
     < 'v> is here is ' is actually \342(-30) \200(-128) \230(-104)
-[ ] colorized output for git diff
 [ ] colorized output for make stderr
 [ ] && with commands doesn't put the whole thing in history, just parts
+
+to replace bash as git shell
+[ ] colorized output for git diff
 
 new, uncategorized
 

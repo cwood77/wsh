@@ -1,6 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include "../cmn/autoPtr.hpp"
 #include "../cmn/service.hpp"
+#include "../cui/api.hpp"
 #include "../cui/pen.hpp"
 #include "../tcatlib/api.hpp"
 #include "api.hpp"
@@ -9,11 +10,21 @@
 
 namespace outcor {
 
-class noopColorer : public iOutputColorer {
+class defStdoutColorer : public iOutputColorer {
 public:
    virtual std::string color(const std::string& blob)
    {
       return blob;
+   }
+};
+
+class defStderrColorer : public iOutputColorer {
+public:
+   virtual std::string color(const std::string& blob)
+   {
+      std::stringstream s;
+      s << pen::fgcol(pen::kRed,true) << blob << pen::fgcol(pen::kDefault);
+      return s.str();
    }
 };
 
@@ -131,8 +142,11 @@ public:
          return *new gitStdoutColorer();
       else if(resolvedPath == "make" && isOut)
          return *new makeColorer();
+
+      if(isOut)
+         return *new defStdoutColorer();
       else
-         return *new noopColorer();
+         return *new defStderrColorer();
    }
 };
 

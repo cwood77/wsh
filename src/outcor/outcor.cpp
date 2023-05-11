@@ -1,6 +1,6 @@
 #include "../cmn/service.hpp"
 #include "../cmn/win32.hpp"
-#include "../cui/api.hpp"
+#include "../cui/pen.hpp"
 #include "../tcatlib/api.hpp"
 #include "api.hpp"
 
@@ -8,38 +8,39 @@ namespace outcor {
 
 class sink : public iSink {
 public:
-   sink(cmn::mutex& m, cui::iStyler& s, cui::iStylePrefs::styles st)
-   : m_lock(m), m_styler(s), m_style(st) {}
+   sink(cmn::mutex& m, pen::object& p)
+   : m_lock(m), m_pen(p) {}
 
    virtual void release() { delete this; }
 
    virtual void write(time_t ts, const std::string& s)
    {
-      m_styler.with(m_style,[&](auto& o){ o << s; });
+      m_pen.str()
+         // return colors to a standard baseline
+         << pen::fgcol(pen::kDefault) << pen::bgcol(pen::kDefault)
+         << s;
    }
 
 private:
    cmn::autoLock m_lock;
-   cui::iStyler& m_styler;
-   cui::iStylePrefs::styles m_style;
+   pen::object& m_pen;
 };
 
 class outCorrelator : public iOutCorrelator {
 public:
    outCorrelator()
-   : m_styler(m_svcMan->demand<cui::iStyler>())
+   : m_pen(m_svcMan->demand<pen::object>())
    {
    }
 
-   virtual iSink& lock(bool isOut)
+   virtual iSink& lock(bool /*isOut*/)
    {
-      return *new sink(m_mutex,m_styler,
-         isOut ? cui::iStylePrefs::kNormal : cui::iStylePrefs::kError);
+      return *new sink(m_mutex,m_pen);
    }
 
 private:
    tcat::typePtr<cmn::serviceManager> m_svcMan;
-   cui::iStyler& m_styler;
+   pen::object& m_pen;
    cmn::mutex m_mutex;
 };
 
