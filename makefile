@@ -358,6 +358,7 @@ $(LEDIT_TEST_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 # outcor
 
 OUTCOR_SRC = \
+	src/outcor/color.cpp \
 	src/outcor/facade.cpp \
 	src/outcor/outcor.cpp \
 	src/q/tailCmd.cpp \

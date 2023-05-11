@@ -1,9 +1,15 @@
 parity with bash for db dev
-[ ] colorized output for git
-[ ] use peekpipe to try to fix pipe reading race
-[ ] copy/paste
+[ ] make uses weird single quotes that can't survive wsh
+    < 'v> is here is ' is actually \342(-30) \200(-128) \230(-104)
+[ ] colorized output for git diff
+[ ] colorized output for make stderr
+[ ] && with commands doesn't put the whole thing in history, just parts
+
+new, uncategorized
 
 nice to have for db dev
+[ ] paste from clipboard
+[ ] gvim command for launching VIM with 'start'
 [ ] git help
 [ ] colorized output for make
 [ ] keystroke help
@@ -12,6 +18,7 @@ nice to have for db dev
 [ ] command - setHelp command
 
 later
+[ ] use peekpipe to try to fix pipe reading race
 [ ] pipes
 [ ] redirection (< and >)
 [ ] hint text (history completion)
@@ -28,7 +35,9 @@ deferred but not rejected
 [ ] decide which commands are internal and which are not
 [ ] tab completion is based on userText, so input with multiple paths will be ambiguous?
 
-done
+done (add to end)
 [x] code review 5/6/23
 [x] tab completion (file browsing)
 [x] two commands on a line (&&)
+[x] colorized output for git status
+[x] colorized output for make stdout

@@ -170,6 +170,7 @@ testDefineTest(outcor_cancelKillsJob)
          size_t cnt = snap.count("childTest.exe");
          a.assertTrue(0 == cnt);
       }
+
    });
 }
 

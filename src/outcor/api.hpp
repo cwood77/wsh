@@ -26,6 +26,18 @@ public:
    virtual void join() = 0;
 };
 
+class iOutputColorer {
+public:
+   virtual ~iOutputColorer() {}
+   virtual std::string color(const std::string& blob) = 0;
+};
+
+class iOutputColorerFactory {
+public:
+   virtual ~iOutputColorerFactory() {}
+   virtual iOutputColorer& create(const std::string& resolvedPath, bool isOut) = 0;
+};
+
 } // namespace outcor
 
 #endif // ___outcor_api___

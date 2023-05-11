@@ -4,15 +4,44 @@
 #include "../cmn/win32.hpp"
 #include "../cmn/wshsubproc.hpp"
 #include "../cui/api.hpp"
-#include "../ledit/api.hpp"
+#include "../cui/pen.hpp"
 #include "../exec/api.hpp"
 #include "../exec/cancel.hpp"
+#include "../ledit/api.hpp"
 #include "../tcatlib/api.hpp"
 #include "api.hpp"
 #include <memory>
 #include <windows.h>
 
 namespace outcor {
+
+class coloringPipeThread : public cmn::iThread {
+public:
+   coloringPipeThread(exec::iOutPipe& p, iOutCorrelator& o, bool isOut)
+   : m_pipe(p), m_out(o), m_isOut(isOut) {}
+
+   void configure(const std::string& resolvedPath)
+   {
+      tcat::typePtr<outcor::iOutputColorerFactory> pFac;
+      m_pColorer.reset(&pFac->create(resolvedPath,m_isOut));
+   }
+
+   virtual void run()
+   {
+      m_pipe.processLoop([&](auto& s)
+      {
+         auto colored = m_pColorer->color(s);
+         cmn::autoReleasePtr<outcor::iSink> pSink(&m_out.lock(m_isOut));
+         pSink->write(0,colored);
+      });
+   }
+
+private:
+   exec::iOutPipe& m_pipe;
+   iOutCorrelator& m_out;
+   const bool m_isOut;
+   std::unique_ptr<iOutputColorer> m_pColorer;
+};
 
 class pipeThread : public cmn::iThread {
 public:
@@ -84,6 +113,7 @@ public:
 
    void beginExecute(const ledit::cmdLineResult& command)
    {
+      m_outTh.configure(command.resolvedCommand);
       m_cancelMon.reset(new cancel::autoInstallMonitor(m_cancel));
       m_outTc.start();
       m_errTc.start();
@@ -170,7 +200,7 @@ private:
    tcat::typePtr<exec::iOutPipe> m_pStdErr;
    tcat::typePtr<exec::iJob> m_pJob;
 
-   pipeThread m_outTh;
+   coloringPipeThread m_outTh;
    pipeThread m_errTh;
 
    cmn::threadController m_outTc;
