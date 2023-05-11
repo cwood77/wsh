@@ -1,7 +1,4 @@
 parity with bash for db dev
-[ ] make uses weird single quotes that can't survive wsh
-    < 'v> is here is ' is actually \342(-30) \200(-128) \230(-104)
-[ ] colorized output for make stderr
 [ ] && with commands doesn't put the whole thing in history, just parts
 
 to replace bash as git shell
@@ -43,3 +40,7 @@ done (add to end)
 [x] two commands on a line (&&)
 [x] colorized output for git status
 [x] colorized output for make stdout
+[x] make uses weird single quotes that can't survive wsh
+    < 'v> is here is ' is actually \342(-30) \200(-128) \230(-104)
+                 end '                  -30       -128       -103
+[x] colorized output for make stderr

@@ -43,26 +43,6 @@ private:
    std::unique_ptr<iOutputColorer> m_pColorer;
 };
 
-class pipeThread : public cmn::iThread {
-public:
-   pipeThread(exec::iOutPipe& p, iOutCorrelator& o, bool isOut)
-   : m_pipe(p), m_out(o), m_isOut(isOut) {}
-
-   virtual void run()
-   {
-      m_pipe.processLoop([&](auto& s)
-      {
-         cmn::autoReleasePtr<outcor::iSink> pSink(&m_out.lock(m_isOut));
-         pSink->write(0,s);
-      });
-   }
-
-private:
-   exec::iOutPipe& m_pipe;
-   iOutCorrelator& m_out;
-   const bool m_isOut;
-};
-
 #if 0
 class segmentBase {
 public:
@@ -114,6 +94,7 @@ public:
    void beginExecute(const ledit::cmdLineResult& command)
    {
       m_outTh.configure(command.resolvedCommand);
+      m_errTh.configure(command.resolvedCommand);
       m_cancelMon.reset(new cancel::autoInstallMonitor(m_cancel));
       m_outTc.start();
       m_errTc.start();
@@ -201,7 +182,7 @@ private:
    tcat::typePtr<exec::iJob> m_pJob;
 
    coloringPipeThread m_outTh;
-   pipeThread m_errTh;
+   coloringPipeThread m_errTh;
 
    cmn::threadController m_outTc;
    cmn::threadController m_errTc;

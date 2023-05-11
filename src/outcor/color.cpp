@@ -84,7 +84,7 @@ private:
    pen::colors m_color;
 };
 
-class makeColorer : public colorerBase {
+class makeStdoutColorer : public colorerBase {
 public:
    virtual std::string color(const std::string& blob)
    {
@@ -134,14 +134,83 @@ public:
    }
 };
 
+class makeStderrColorer : public colorerBase {
+public:
+   virtual std::string color(const std::string& blob)
+   {
+      std::stringstream out;
+      out << pen::fgcol(pen::kRed,true);
+
+      const char *pThumb = blob.c_str();
+
+      for(;*pThumb!=0;)
+      {
+         if(startsWith("\xe2\x80\x98",pThumb)) // open single-quote
+         {
+            out << "'";
+            pThumb += 3;
+         }
+         else if(startsWith("\xe2\x80\x99",pThumb)) // close single-quote
+         {
+            out << "'";
+            pThumb += 3;
+         }
+         else if(startsWith(" error: ",pThumb))
+         {
+            out
+               << " "
+               << pen::fgcol(pen::kYellow,true)
+               << pen::bgcol(pen::kRed)
+               << "error:"
+               << pen::fgcol(pen::kRed,true)
+               << pen::bgcol(pen::kDefault)
+               << " ";
+            pThumb += 8;
+         }
+         else if(startsWith(" warning: ",pThumb))
+         {
+            out
+               << " "
+               << pen::fgcol(pen::kBlue,true)
+               << pen::bgcol(pen::kRed)
+               << "warning:"
+               << pen::fgcol(pen::kRed,true)
+               << pen::bgcol(pen::kDefault)
+               << " ";
+            pThumb += 10;
+         }
+         else if(startsWith(" In member function ",pThumb))
+         {
+            out
+               << " "
+               << pen::fgcol(pen::kBlue,true)
+               << "In member function"
+               << pen::fgcol(pen::kRed,true)
+               << " ";
+            pThumb += 20;
+         }
+         else
+            out << std::string(pThumb++,1);
+      }
+
+      this does not compile
+
+      out << pen::fgcol(pen::kDefault);
+      return out.str();
+   }
+};
+
 class outputColorerFactory : public iOutputColorerFactory {
 public:
    virtual iOutputColorer& create(const std::string& resolvedPath, bool isOut)
    {
       if(resolvedPath == "git status" && isOut)
          return *new gitStdoutColorer();
+
       else if(resolvedPath == "make" && isOut)
-         return *new makeColorer();
+         return *new makeStdoutColorer();
+      else if(resolvedPath == "make" && !isOut)
+         return *new makeStderrColorer();
 
       if(isOut)
          return *new defStdoutColorer();
