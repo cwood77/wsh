@@ -26,6 +26,52 @@ private:
    pen::object& m_pen;
 };
 
+class timestampingSink : public iSink {
+public:
+   timestampingSink(cmn::mutex& m, pen::object& p)
+   : m_lock(m), m_pen(p) {}
+
+   virtual void release() { delete this; }
+
+   virtual void write(time_t ts, const std::string& s)
+   {
+      struct tm *pLt = ::localtime(&ts);
+      char block[1024];
+      ::strftime(block,1023,"[%I:%M:%S%p] ",pLt);
+
+      const char *pThumb = s.c_str();
+      while(*pThumb!=0)
+      {
+         auto line = scanLine(pThumb);
+         writeLine(block,line);
+      }
+   }
+
+private:
+   std::string scanLine(const char*& pThumb)
+   {
+      const char *pStart = pThumb;
+      for(;*pThumb!=0&&*pThumb!='\r'&&*pThumb!='\n';pThumb++);
+      if(*pThumb=='\r') ++pThumb;
+      if(*pThumb=='\n') ++pThumb;
+      return std::string(pStart,pThumb-pStart);
+   }
+
+   void writeLine(char *ts, const std::string& s)
+   {
+      m_pen.str()
+         << pen::fgcol(pen::kYellow) << pen::bgcol(pen::kDefault)
+         << ts
+
+         // return colors to a standard baseline
+         << pen::fgcol(pen::kDefault) << pen::bgcol(pen::kDefault)
+         << s;
+   }
+
+   cmn::autoLock m_lock;
+   pen::object& m_pen;
+};
+
 class outCorrelator : public iOutCorrelator {
 public:
    outCorrelator()
@@ -33,9 +79,12 @@ public:
    {
    }
 
-   virtual iSink& lock(bool /*isOut*/)
+   virtual iSink& lock(bool isOut)
    {
-      return *new sink(m_mutex,m_pen);
+      if(isOut)
+         return *new timestampingSink(m_mutex,m_pen);
+      else
+         return *new sink(m_mutex,m_pen);
    }
 
 private:

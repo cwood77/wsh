@@ -11,7 +11,6 @@ nice to have for tech debt
 [ ] command - setHelp command
 
 fun?
-[ ] timestamped output
 
 later
 [ ] paste from clipboard
@@ -44,3 +43,4 @@ done (add to end)
 [x] && with commands doesn't put the whole thing in history, just parts
 [x] gvim command for launching VIM with 'start'
 [x] hint text (history completion)
+[x] timestamped output

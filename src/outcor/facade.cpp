@@ -32,7 +32,7 @@ public:
       {
          auto colored = m_pColorer->color(s);
          cmn::autoReleasePtr<outcor::iSink> pSink(&m_out.lock(m_isOut));
-         pSink->write(0,colored);
+         pSink->write(::time(NULL),colored);
       });
    }
 
