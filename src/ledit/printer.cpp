@@ -33,15 +33,18 @@ void printer::print(cmdLineState& s)
    // usertext portion
    m_pen.str() << pen::moveTo(xy);
    m_style.normal([&](auto& o){ o << s.userText; });
-   xy.x += s.userText.length();
+   //xy.x += s.userText.length();
+
+   // guess portion
+   m_style.hint([&](auto& o){ o << s.guessSuffix; });
 
    // erase old stuff (if necessary)
-   size_t totalSize = s.userText.length();
+   size_t totalSize = s.userText.length() + s.guessSuffix.length();
    if(s.lastNonPromptLength > totalSize)
-   {
+   //{
       m_style.normal([&](auto& o){ o << std::string(s.lastNonPromptLength-totalSize,' '); });
-      m_pen.str() << pen::moveTo(xy);
-   }
+      //m_pen.str() << pen::moveTo(xy);
+   //}
    s.lastNonPromptLength = totalSize;
 
    // position the cursor where the user left it

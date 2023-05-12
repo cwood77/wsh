@@ -24,6 +24,7 @@ public:
    virtual void flush() = 0;
    virtual char getKey() = 0;
    virtual bool hasShift() = 0;
+   virtual bool hasControl() = 0;
 };
 
 class iCannedUserInput : public iUserInput {

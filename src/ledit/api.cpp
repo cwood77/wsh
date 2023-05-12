@@ -35,6 +35,8 @@ cmdLineResult cmdLineEditor::run()
          c.base = in.getKey();
          if(c.base == -32)
          {
+            auto ctl = in.hasControl();
+            c.flags = (ctl ? 2 : 0);
             c.mod = c.base;
             c.base = in.getKey();
          }

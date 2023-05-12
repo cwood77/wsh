@@ -4,20 +4,23 @@ to replace bash as git shell
 new, uncategorized
 
 nice to have for db dev
-[ ] paste from clipboard
-[ ] keystroke help
+
+nice to have for tech debt
 [ ] script language
 [ ] command - setAlias command
 [ ] command - setHelp command
 
+fun?
+[ ] timestamped output
+
 later
+[ ] paste from clipboard
+[ ] keystroke help
 [ ] use peekpipe to try to fix pipe reading race
 [ ] pipes
 [ ] redirection (< and >)
-[ ] hint text (history completion)
 [ ] tar help
 [ ] macros
-[ ] timestamped output
 [ ] 'explicit' command that means no resolving?
 [ ] command - ver command
 [ ] command - dir-like command
@@ -40,3 +43,4 @@ done (add to end)
 [x] colorized output for make stderr
 [x] && with commands doesn't put the whole thing in history, just parts
 [x] gvim command for launching VIM with 'start'
+[x] hint text (history completion)

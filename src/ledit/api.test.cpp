@@ -28,6 +28,7 @@ public:
    }
 
    virtual bool hasShift() { return shifts.find(i-1)!=shifts.end(); }
+   virtual bool hasControl() { return false; }
 
    std::vector<char> keys;
    size_t i;

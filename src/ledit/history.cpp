@@ -1,5 +1,6 @@
 #include "../tcatlib/api.hpp"
 #include "api.hpp"
+#include <cstring>
 #include <istream>
 #include <map>
 #include <vector>
@@ -22,6 +23,7 @@ private:
 void cmdLineHistory::add(const std::string& line)
 {
    m_list.insert(m_list.begin(),line);
+   m_dict[line]++;
 }
 
 std::string cmdLineHistory::get(size_t& idx, bool up)
@@ -51,7 +53,24 @@ std::string cmdLineHistory::get(size_t& idx, bool up)
 
 std::string cmdLineHistory::matchBest(const std::string& start)
 {
-   return "";
+   bool added = false;
+   auto it = m_dict.find(start);
+   if(it == m_dict.end())
+   {
+      m_dict[start];
+      it = m_dict.find(start);
+      added = true;
+   }
+
+   std::string ans;
+   for(;it!=m_dict.end();++it)
+      if(::strncmp(start.c_str(),it->first.c_str(),start.length())==0)
+         ans = it->first;
+
+   if(added)
+      m_dict.erase(start);
+
+   return ans;
 }
 
 void cmdLineHistory::load(std::istream& s)
@@ -61,7 +80,10 @@ void cmdLineHistory::load(std::istream& s)
       std::string line;
       std::getline(s,line);
       if(!line.empty())
+      {
          m_list.push_back(line);
+         m_dict[line]++;
+      }
    }
 }
 

@@ -18,6 +18,7 @@ public:
       {
          s.userText = "";
          s.iCursor = 0;
+         reguess(s);
          s.resolved = m_resolver.tryResolve(s.userText);
          return true;
       }
@@ -46,6 +47,27 @@ public:
          return true;
       }
 
+      else if(c.controlModIs(116)) // ctrl-right arrow
+      {
+         if(((size_t)s.iCursor) == s.userText.length() && s.guessSuffix.length())
+         {
+            s.userText += std::string(s.guessSuffix.c_str(),1);
+            s.iCursor = s.userText.length();
+            reguess(s);
+         }
+         return true;
+      }
+      else if(c.controlModIs(117)) // ctrl-end
+      {
+         if(s.guessSuffix.length())
+         {
+            s.userText += s.guessSuffix;
+            s.iCursor = s.userText.length();
+            reguess(s);
+         }
+         return true;
+      }
+
       else if(c.is(8)) // backspace
       {
          if(s.iCursor)
@@ -54,6 +76,7 @@ public:
             std::string right(s.userText.c_str()+s.iCursor);
             s.userText = (left + right);
             s.iCursor--;
+            reguess(s);
             s.resolved = m_resolver.tryResolve(s.userText);
          }
          return true;
@@ -63,6 +86,7 @@ public:
       {
          s.userText = m_history.get(s.histIdx,/*up*/true);
          s.iCursor = s.userText.length();
+         reguess(s);
          s.resolved = m_resolver.tryResolve(s.userText);
          return true;
       }
@@ -70,6 +94,7 @@ public:
       {
          s.userText = m_history.get(s.histIdx,/*up*/false);
          s.iCursor = s.userText.length();
+         reguess(s);
          s.resolved = m_resolver.tryResolve(s.userText);
          return true;
       }
@@ -94,11 +119,23 @@ public:
       std::string right(s.userText.c_str()+s.iCursor);
       s.userText = (left + std::string(1,c.base) + right);
       s.iCursor++;
+      reguess(s);
       s.resolved = m_resolver.tryResolve(s.userText);
       return true;
    }
 
 private:
+   void reguess(cmdLineState& s)
+   {
+      s.guessSuffix = "";
+      if(s.userText.length() == 0)
+         return;
+
+      auto g = m_history.matchBest(s.userText);
+      if(g.length())
+         s.guessSuffix = g.c_str() + s.userText.length();
+   }
+
    tcat::typePtr<cmn::serviceManager> m_svcMan;
    resolve::iProgramResolver& m_resolver;
    ledit::iCmdLineHistory& m_history;

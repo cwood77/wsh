@@ -12,6 +12,7 @@ public:
    virtual void flush() { while(::kbhit()) { ::getch(); } }
    virtual char getKey() { return ::getch(); }
    virtual bool hasShift() { return ::GetAsyncKeyState(VK_SHIFT) & ~0x1; }
+   virtual bool hasControl() { return ::GetAsyncKeyState(VK_CONTROL) & ~0x1; }
 };
 
 tcatExposeTypeAs(userInput,iUserInput);
@@ -34,6 +35,8 @@ public:
    }
 
    virtual bool hasShift() { return m_pNext->hasShift(); }
+
+   virtual bool hasControl() { return m_pNext->hasControl(); }
 
    virtual void chain(iUserInput& inner) { m_pNext = &inner; }
 

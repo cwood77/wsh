@@ -23,6 +23,7 @@ public:
    std::string prompt;
    std::string userText;
    int iCursor;
+   std::string guessSuffix;
    size_t lastNonPromptLength;
    size_t histIdx;
 
@@ -71,12 +72,14 @@ public:
 
 class extKey {
 public:
-   extKey() : mod(0), base(0) {}
+   extKey() : flags(0), mod(0), base(0) {}
 
-   bool is(char c) const { return mod == 0 && base == c; }
-   bool modIs(char c) const { return mod == -32 && base == c; }
-   bool isShift(char c) const { return mod == 1 && base == c; }
+   bool is(char c) const { return flags == 0 && mod == 0 && base == c; }
+   bool modIs(char c) const { return flags == 0 && mod == -32 && base == c; }
+   bool controlModIs(char c) const { return flags == 2 && mod == -32 && base == c; }
+   bool isShift(char c) const { return flags == 0 && mod == 1 && base == c; }
 
+   char flags;
    char mod;
    char base;
 };
