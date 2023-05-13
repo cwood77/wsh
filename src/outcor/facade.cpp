@@ -80,7 +80,14 @@ public:
 };
 #endif
 
-class subprocessFacadeImpl {
+class iSubprocessFacadeImpl {
+public:
+   virtual ~iSubprocessFacadeImpl() {}
+   virtual void beginExecute(const ledit::cmdLineResult& command) = 0;
+   virtual bool join() = 0;
+};
+
+class subprocessFacadeImpl : public iSubprocessFacadeImpl {
 public:
    subprocessFacadeImpl(iOutCorrelator& o)
    : m_outTh(*m_pStdOut,o,true)
@@ -113,7 +120,6 @@ public:
                cmn::buildWshMasterShmemName(::GetCurrentProcessId()).c_str());
             (*m_pShmem)->channel = myIdx;
          });
-      m_command = command;
    }
 
    bool join()
@@ -191,7 +197,32 @@ private:
    cancel::iKeyMonitor& m_cancel;
    std::unique_ptr<cancel::autoInstallMonitor> m_cancelMon;
 
-   ledit::cmdLineResult m_command;
+   cmn::autoHandle m_han;
+};
+
+class subprocessFacadeFaFImpl : public iSubprocessFacadeImpl {
+public:
+   subprocessFacadeFaFImpl(iOutCorrelator& o)
+   {}
+
+   void beginExecute(const ledit::cmdLineResult& command)
+   {
+      tcat::typePtr<exec::iProcessRunner> pProc;
+      m_han.h = pProc->execute(NULL,command.resolvedCommand.c_str(),
+         NULL,NULL,
+         [&](DWORD procId)
+         {
+         });
+   }
+
+   bool join()
+   {
+      return true;
+   }
+
+private:
+   tcat::typePtr<cmn::serviceManager> m_pSvcMan;
+
    cmn::autoHandle m_han;
 };
 
@@ -199,7 +230,11 @@ class subprocessFacade : public iSubprocessFacade {
 public:
    virtual void beginExecute(iOutCorrelator& o, const ledit::cmdLineResult& command)
    {
-      m_pImpl.reset(new subprocessFacadeImpl(o));
+      bool FaF = (command.userText == "gvim");
+      if(FaF)
+         m_pImpl.reset(new subprocessFacadeFaFImpl(o));
+      else
+         m_pImpl.reset(new subprocessFacadeImpl(o));
       m_pImpl->beginExecute(command);
    }
 
@@ -211,7 +246,7 @@ public:
    }
 
 private:
-   std::unique_ptr<subprocessFacadeImpl> m_pImpl;
+   std::unique_ptr<iSubprocessFacadeImpl> m_pImpl;
 };
 
 tcatExposeTypeAs(subprocessFacade,iSubprocessFacade);
