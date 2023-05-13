@@ -47,7 +47,7 @@ protected:
 void intCommand::run(console::iLog& l)
 {
    tcat::typePtr<file::iFileManager> fMan;
-   l.writeLnDebug("loading config settings (optional)");
+   //l.writeLnDebug("loading config settings (optional)");
    cmn::autoReleasePtr<file::iSstFile> pFile(&fMan->bindFile<file::iSstFile>(
       file::iFileManager::kExeAdjacent,
       "config.sst",
@@ -55,14 +55,14 @@ void intCommand::run(console::iLog& l)
    ));
    pFile->tie(l);
 
-   l.writeLnDebug("setup the shmem");
+   //l.writeLnDebug("setup the shmem");
    cmn::shmem<cmn::wshMasterBlock> shmemMaster(
       cmn::buildWshMasterShmemName(::GetCurrentProcessId()));
    if(shmemMaster.existed())
       throw std::runtime_error("shmem already exists?");
    shmemMaster->version = cmn::wshMasterBlock::kCurrentVersion;
 
-   l.writeLnDebug("compiling services");
+   //l.writeLnDebug("compiling services");
    tcat::typePtr<cmn::serviceManager> svcMan;
    pen::object _pen(std::cout);
    cmn::autoService<pen::object> _penSvc(*svcMan,_pen);
@@ -90,7 +90,7 @@ void intCommand::run(console::iLog& l)
    }
    cmn::autoService<ledit::iCmdLineHistory> _historySvc(*svcMan,*_history);
 
-   l.writeLnDebug("loading canned input");
+   //l.writeLnDebug("loading canned input");
    if(!oCannedInputFile.empty())
    {
       cmn::autoReleasePtr<file::iSstFile> pFile(&fMan->bindFile<file::iSstFile>(
@@ -110,8 +110,10 @@ void intCommand::run(console::iLog& l)
       _in2->configure(v);
    }
 
-   l.writeLnDebug("switching to cui");
+   //l.writeLnDebug("switching to cui");
    pen::object::setupStdOut();
+
+   l.writeLnInfo("wsh " __DATE__ " " __TIME__);
 
    // listen for chars
    //
